@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>contact_motion_planner</name>
+  <version>0.0.0</version>
+  <description>The contact_motion_planner package</description>
+
+  <maintainer email="psh117@snu.ac.kr">Suhan Park</maintainer>
+  <author email="psh117@snu.ac.kr">Suhan Park</author>
+
+  <license>BSD</license>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <exec_depend>roscpp</exec_depend>
+  <build_depend>moveit_core</build_depend>
+  <build_depend>moveit_ros_planning_interface</build_depend>
+  <build_depend>moveit_ros_perception</build_depend>
+  <build_depend>tf2</build_depend>
+  <exec_depend>moveit_core</exec_depend>
+  <exec_depend>moveit_ros_planning_interface</exec_depend>
+  <exec_depend>moveit_ros_perception</exec_depend>
+  <exec_depend>tf2</exec_depend>
+
+</package>
+
