@@ -22,6 +22,7 @@
   <exec_depend>moveit_ros_planning_interface</exec_depend>
   <exec_depend>moveit_ros_perception</exec_depend>
   <exec_depend>tf2</exec_depend>
+  <test_depend>rosunit</test_depend>
 
 </package>
 
