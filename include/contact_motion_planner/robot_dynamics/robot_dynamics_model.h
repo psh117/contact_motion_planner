@@ -1,13 +1,9 @@
 #ifndef ROBOT_DYNAMICS_MODEL_H
 #define ROBOT_DYNAMICS_MODEL_H
 
+#include <memory>
 #include <vector>
 #include <Eigen/Dense>
-#include <Eigen/Geometry>
-#include <memory>
-#include <fcl/collision.h>
-#include <fcl/shape/geometric_shapes.h>
-#include <fcl/shape/geometric_shapes_utility.h>
 
 namespace suhan_contact_planner
 {

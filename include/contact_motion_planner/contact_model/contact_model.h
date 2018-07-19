@@ -1,10 +1,10 @@
 #ifndef CONTACT_MODEL_H
 #define CONTACT_MODEL_H
 
+#include <memory>
 #include <vector>
 #include <Eigen/Dense>
-#include <Eigen/Geometry>
-#include <memory>
+
 #include <fcl/collision.h>
 #include <fcl/shape/geometric_shapes.h>
 #include <fcl/shape/geometric_shapes_utility.h>
