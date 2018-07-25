@@ -14,7 +14,7 @@ public:
 
   // constraints? how?
 protected:
-  //virtual void sample();
+
 private:
   Eigen::Vector3d dimension_; ///< width, length, height
 

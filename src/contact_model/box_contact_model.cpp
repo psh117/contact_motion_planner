@@ -17,4 +17,5 @@ BoxContactModel::BoxContactModel(const Eigen::Vector3d &dimension) : dimension_(
   BoxContactModel("", dimension);
 }
 
+
 }

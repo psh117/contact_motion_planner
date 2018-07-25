@@ -36,8 +36,12 @@ public:
   bool operate(OperationDirection dir, double delta);
   bool isSamePose(const ContactModel& model, double threshold) const;
 
+
   inline const Eigen::Vector3d getPosition() const {return transform_.translation(); }
   inline const Eigen::Isometry3d getTransform() const { return transform_; }
+
+  inline std::shared_ptr< fcl::ShapeBase >& getFCLModel() { return fcl_model_; }
+  inline fcl::Transform3f& getFCLTransform() { return fcl_transform_; }
 
 protected:
   std::string name_;
@@ -45,8 +49,10 @@ protected:
   std::vector < ContactPtr > contact_candidate_;
   std::vector < ContactPtr > contact_environment_;
   std::shared_ptr< fcl::ShapeBase > fcl_model_;
+  fcl::Transform3f fcl_transform_;
 
 
+  virtual void updateFCLModel();
 
   int sample_; ///< number of samples
 

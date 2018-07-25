@@ -68,6 +68,7 @@ bool ContactModel::operate(OperationDirection dir, double delta)
     return false;
   }
 
+  updateFCLModel();
   return true;
 }
 
@@ -80,6 +81,11 @@ bool ContactModel::isSamePose(const ContactModel& model, double threshold) const
   translation_diff = (model.getTransform().translation() - transform_.translation());
 
   return (orientation_diff.norm() < threshold && translation_diff.norm() < threshold);
+}
+
+void ContactModel::updateFCLModel()
+{
+
 }
 
 }
