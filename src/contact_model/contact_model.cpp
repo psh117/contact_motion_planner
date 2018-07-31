@@ -43,6 +43,8 @@ bool ContactModel::operate(OperationDirection dir, double delta_x, double delta_
     if(dir == DIR_X || dir == DIR_Y) return false;
   }
 
+  // TODO: When a contact model object is operated, contact state should be changed
+  //       You may change the class structure
   switch (dir)
   {
   case DIR_X:
@@ -54,6 +56,8 @@ bool ContactModel::operate(OperationDirection dir, double delta_x, double delta_
   case DIR_Z:
     transform_.translation()(2) += delta_x;
     break;
+
+  // TODO: The rotation should be rotated w.r.t contact point not the center of the object.
   case DIR_ROLL:
     transform_.linear() = transform_.linear() * Eigen::AngleAxisd(delta_orientation, Eigen::Vector3d::UnitX());
     break;

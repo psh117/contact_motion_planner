@@ -29,11 +29,11 @@ int main()
 
   start_transform.linear() = Eigen::Matrix3d::Identity();
   goal_transform.linear() = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(90 * 3.141592/180., Eigen::Vector3d::UnitZ());
-  start_transform.translation() << 0.0, 0.0, 0.0;
-  goal_transform.translation() << .6, 0.5, .0;
+  start_transform.translation() << 0.0, 0.0, 0.1;
+  goal_transform.translation() << .6, 0.5, .1;
 
-  env_table1_transform.translation()    << .0, .0, -0.025;
-  env_obstacle1_transform.translation() << -.25, .1, .0;
+  env_table1_transform.translation()    << .0, .0, -0.0251;
+  env_obstacle1_transform.translation() << .25, .0, .25;
   env_table1_transform.linear() = Eigen::Matrix3d::Identity();
   env_obstacle1_transform.linear() = Eigen::Matrix3d::Identity();
 
@@ -43,8 +43,8 @@ int main()
   ContactModelGraph<BoxContactModel> g;
   PlanningScenePtr scene = make_shared<PlanningScene>();
   RobotDynamicsModelPtr robot_model = make_shared<DexterousRobotModel>();
-  //scene->addSceneObject(env_table1, env_table1_transform);
-  //scene->addSceneObject(env_obstacle1, env_obstacle1_transform);
+  scene->addSceneObject(env_table1, env_table1_transform);
+  scene->addSceneObject(env_obstacle1, env_obstacle1_transform);
   g.setRobotDynamicsModel(robot_model);
   g.setPlanningScene(scene);
   g.setStart(start);
