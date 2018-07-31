@@ -28,8 +28,8 @@ class PlanningScene
 public:
   bool isPossible() const;  ///< return whether collision between objects is free
   inline void setTargetObject(const ContactModelPtr &target_object) { target_object_ = target_object; }
-  void addSceneObject(std::shared_ptr<fcl::ShapeBase> &shape, const Eigen::Isometry3d &transform);
-  void addSceneObject(std::shared_ptr<fcl::ShapeBase> &shape, const fcl::Transform3f &transform);
+  void addSceneObject(const std::shared_ptr<fcl::ShapeBase> &shape, const Eigen::Isometry3d &transform);
+  void addSceneObject(const std::shared_ptr<fcl::ShapeBase> &shape, const fcl::Transform3f &transform);
 };
 
 

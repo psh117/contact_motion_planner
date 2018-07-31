@@ -10,6 +10,7 @@
 #include <fcl/shape/geometric_shapes_utility.h>
 
 #include "contact_motion_planner/contact/face_contact.h"
+#include "contact_motion_planner/fcl_eigen_utils.h"
 
 namespace suhan_contact_planner
 {
@@ -33,11 +34,12 @@ public:
    * @param delta
    * @return Whether it is possible operation.
    */
-  bool operate(OperationDirection dir, double delta);
-  bool isSamePose(const ContactModel& model, double threshold) const;
+  bool operate(OperationDirection dir, double delta_x, double delta_orientation);
+  bool isSamePose(const ContactModel& model, double threshold_x, double threshold_orientation) const;
 
 
   inline const Eigen::Vector3d getPosition() const {return transform_.translation(); }
+  void setTransform(const Eigen::Isometry3d &transform) { transform_ = transform; updateFCLModel(); }
   inline const Eigen::Isometry3d getTransform() const { return transform_; }
 
   inline std::shared_ptr< fcl::ShapeBase >& getFCLModel() { return fcl_model_; }

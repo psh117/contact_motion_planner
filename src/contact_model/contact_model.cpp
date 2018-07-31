@@ -1,6 +1,6 @@
 #include "contact_motion_planner/contact_model/contact_model.h"
 
-
+#include <ros/ros.h>
 
 namespace suhan_contact_planner
 {
@@ -23,7 +23,7 @@ static Eigen::Vector3d getPhi(Eigen::Matrix3d current_rotation,
 }
 
 
-bool ContactModel::operate(OperationDirection dir, double delta)
+bool ContactModel::operate(OperationDirection dir, double delta_x, double delta_orientation)
 {
   if(contact_environment_.empty())  // No contact
   {
@@ -46,22 +46,22 @@ bool ContactModel::operate(OperationDirection dir, double delta)
   switch (dir)
   {
   case DIR_X:
-    transform_.translation()(0) += delta;
+    transform_.translation()(0) += delta_x;
     break;
   case DIR_Y:
-    transform_.translation()(1) += delta;
+    transform_.translation()(1) += delta_x;
     break;
   case DIR_Z:
-    transform_.translation()(2) += delta;
+    transform_.translation()(2) += delta_x;
     break;
   case DIR_ROLL:
-    transform_.linear() = transform_.linear() * Eigen::AngleAxisd(delta, Eigen::Vector3d::UnitX());
+    transform_.linear() = transform_.linear() * Eigen::AngleAxisd(delta_orientation, Eigen::Vector3d::UnitX());
     break;
   case DIR_PITCH:
-    transform_.linear() = transform_.linear() * Eigen::AngleAxisd(delta, Eigen::Vector3d::UnitY());
+    transform_.linear() = transform_.linear() * Eigen::AngleAxisd(delta_orientation, Eigen::Vector3d::UnitY());
     break;
   case DIR_YAW:
-    transform_.linear() = transform_.linear() * Eigen::AngleAxisd(delta, Eigen::Vector3d::UnitZ());
+    transform_.linear() = transform_.linear() * Eigen::AngleAxisd(delta_orientation, Eigen::Vector3d::UnitZ());
     break;
   default:
     // Error
@@ -72,7 +72,7 @@ bool ContactModel::operate(OperationDirection dir, double delta)
   return true;
 }
 
-bool ContactModel::isSamePose(const ContactModel& model, double threshold) const
+bool ContactModel::isSamePose(const ContactModel& model, double threshold_x, double threshold_orientation) const
 {
   Eigen::Vector3d orientation_diff;
   Eigen::Vector3d translation_diff;
@@ -80,12 +80,13 @@ bool ContactModel::isSamePose(const ContactModel& model, double threshold) const
   orientation_diff =  getPhi(model.getTransform().linear(), transform_.linear());
   translation_diff = (model.getTransform().translation() - transform_.translation());
 
-  return (orientation_diff.norm() < threshold && translation_diff.norm() < threshold);
+  return (orientation_diff.norm() < threshold_orientation && translation_diff.norm() < threshold_x);
+  //return (translation_diff.norm() < threshold);
 }
 
 void ContactModel::updateFCLModel()
 {
-
+  FCLEigenUtils::convertTransform(transform_, fcl_transform_);
 }
 
 }

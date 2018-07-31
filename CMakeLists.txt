@@ -47,6 +47,12 @@ target_link_libraries (contact_motion_planner
   fcl
 )
 
+add_executable(example src/example.cpp)
+target_link_libraries (example
+  ${catkin_LIBRARIES}
+  contact_motion_planner
+  fcl
+)
 #############
 ## Install ##
 #############
