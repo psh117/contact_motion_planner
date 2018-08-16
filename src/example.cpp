@@ -28,7 +28,7 @@ int main()
   Eigen::Isometry3d goal_transform;
 
   ROS_INFO("START");
-  start->setSampleResolution(3,2);
+  start->setSampleResolution(2,2);
   start->createContactSamples();
   const auto & samples  = start->getPointContactSamples();
 

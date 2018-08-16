@@ -16,6 +16,10 @@ BoxContactModel::BoxContactModel(const std::string &name, const Eigen::Vector3d 
 
 void BoxContactModel::createContactSamples()
 {
+  // Predefined matrix
+  const Eigen::Matrix3d rot_x_90 = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(M_PI / 4, Eigen::Vector3d::UnitX());
+  const Eigen::Matrix3d rot_y_90 = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(M_PI / 4, Eigen::Vector3d::UnitY());
+  const Eigen::Matrix3d rot_z_90 = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(M_PI / 4, Eigen::Vector3d::UnitZ());
   // Contact points
   Eigen::Isometry3d transform;
   // Up and down with vertices
@@ -69,25 +73,74 @@ void BoxContactModel::createContactSamples()
       point_contact_samples_.push_back(new_point_right);
     }
   }
-  /*
+  
   // Contact Line
   for(size_t i=0; i<line_samples_per_side_; i++)
   {
-    for(size_t j=0; j<line_samples_per_side_; j++)
-    {
-      ContactPtr new_line_up = std::make_shared<Contact>(Contact::ContactState::CONTACT_LINE);
-      ContactPtr new_line_down = std::make_shared<Contact>(Contact::ContactState::CONTACT_LINE);
-      transform.linear() = Eigen::Matrix3d::Identity();
-      transform.translation()(0) = dimension_(0) / (line_samples_per_side_+1) * (i+1);
-      transform.translation()(1) = 0;
-      transform.translation()(2) = dimension_(2) / 2;
-      new_line_up->setTransform(transform);
-      transform.translation()(2) = -dimension_(2) / 2;
-      new_line_down->setTransform(transform);
+    ContactPtr new_line[12];
+    for(int i=0; i<12; i++)
+      new_line[i] = std::make_shared<Contact>(Contact::ContactState::CONTACT_LINE);
+    
+    // Up and down
+    ContactPtr new_line_down = std::make_shared<Contact>(Contact::ContactState::CONTACT_LINE);
+    transform.linear() = Eigen::Matrix3d::Identity();
+    transform.translation()(0) = dimension_(0) / (line_samples_per_side_+1) * (i+1) - dimension_(0)/2;
+    transform.translation()(1) = 0;
+    transform.translation()(2) = dimension_(2) / 2;
+    new_line[0]->setTransform(transform);
+    transform.translation()(2) = -dimension_(2) / 2;
+    new_line[1]->setTransform(transform);
 
-    }
+    transform.linear() = rot_z_90;
+    transform.translation()(0) = 0;
+    transform.translation()(1) = dimension_(1) / (line_samples_per_side_+1) * (i+1) - dimension_(1)/2;
+    transform.translation()(2) = dimension_(2) / 2;
+    new_line[2]->setTransform(transform);
+    transform.translation()(2) = -dimension_(2) / 2;
+    new_line[3]->setTransform(transform);
+
+    // Front and rear
+    transform.linear() = rot_x_90;
+    transform.translation()(0) = 0;
+    transform.translation()(2) = dimension_(2) / (line_samples_per_side_+1) * (i+1) - dimension_(2)/2;
+
+    transform.translation()(1) = dimension_(1) / 2;
+    new_line[4]->setTransform(transform);
+    transform.translation()(1) = -dimension_(1) / 2;
+    new_line[5]->setTransform(transform);
+    
+    transform.linear() = rot_x_90 * rot_z_90;
+    transform.translation()(2) = 0;
+    transform.translation()(0) = dimension_(0) / (line_samples_per_side_+1) * (i+1) - dimension_(0)/2;
+
+    transform.translation()(1) = dimension_(1) / 2;
+    new_line[6]->setTransform(transform);
+    transform.translation()(1) = -dimension_(1) / 2;
+    new_line[7]->setTransform(transform);
+
+    // Left and right
+    transform.linear() = rot_y_90;
+    transform.translation()(2) = 0;
+    transform.translation()(1) = dimension_(1) / (line_samples_per_side_+1) * (i+1) - dimension_(1)/2;
+
+    transform.translation()(0) = dimension_(0) / 2;
+    new_line[8]->setTransform(transform);
+    transform.translation()(0) = -dimension_(0) / 2;
+    new_line[9]->setTransform(transform);
+
+    transform.linear() = rot_y_90 * rot_z_90;
+    transform.translation()(1) = 0;
+    transform.translation()(2) = dimension_(2) / (line_samples_per_side_+1) * (i+1) - dimension_(2)/2;
+
+    transform.translation()(0) = dimension_(0) / 2;
+    new_line[10]->setTransform(transform);
+    transform.translation()(0) = -dimension_(0) / 2;
+    new_line[11]->setTransform(transform);
+
+    for(int i=0; i<12; i++)
+      point_contact_samples_.push_back(new_line[i]);
   }
-  */
+  
 }
 
 bool BoxContactModel::operate(OperationDirection dir, double delta_x, double delta_orientation)
