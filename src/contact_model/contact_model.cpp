@@ -30,15 +30,15 @@ bool ContactModel::operate(OperationDirection dir, double delta_x, double delta_
     if(dir == DIR_ROLL || dir == DIR_PITCH) return false;
   }
   // We assume that there's only a contact with environment
-  else if(contact_environment_[0]->getContactState() == Contact::CONTACT_FACE)
+  else if(contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_FACE)
   {
     // Face contact can do anything
   }
-  else if(contact_environment_[0]->getContactState() == Contact::CONTACT_LINE)
+  else if(contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_LINE)
   {
     if(dir == DIR_X || dir == DIR_Y || dir == DIR_YAW) return false;
   }
-  else if(contact_environment_[0]->getContactState() == Contact::CONTACT_POINT)
+  else if(contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_POINT)
   {
     if(dir == DIR_X || dir == DIR_Y) return false;
   }

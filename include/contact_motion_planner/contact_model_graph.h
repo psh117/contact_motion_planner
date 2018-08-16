@@ -42,7 +42,15 @@ public:
   void setGoal(const std::shared_ptr<T> &goal) { goal_ = goal; }
   void setPlanningScene(const PlanningScenePtr &scene_ptr) { planning_scene_ = scene_ptr; }
   void setRobotDynamicsModel(const RobotDynamicsModelPtr &model_ptr) { robot_dynamics_model_ = model_ptr; }
-  void makeGraph()
+
+
+  void makeObjectContactGraph()
+  {
+    ROS_INFO("makeObjectContactGraph");
+    
+
+  }
+  void makeObjectPoseGraph()
   {
     ROS_INFO("makeGraph");
     contact_models_.clear();

@@ -9,7 +9,7 @@
 #include <fcl/shape/geometric_shapes.h>
 #include <fcl/shape/geometric_shapes_utility.h>
 
-#include "contact_motion_planner/contact/face_contact.h"
+#include "contact_motion_planner/contact/contact.h"
 #include "contact_motion_planner/fcl_eigen_utils.h"
 
 namespace suhan_contact_planner
@@ -28,13 +28,14 @@ public:
 
   void contactWrenchOptimize();
 
+  virtual void createContactSamples() = 0;
   /**
    * @brief operation
    * @param dir Direction we want to move
    * @param delta
    * @return Whether it is possible operation.
    */
-  bool operate(OperationDirection dir, double delta_x, double delta_orientation);
+  virtual bool operate(OperationDirection dir, double delta_x, double delta_orientation);
   bool isSamePose(const ContactModel& model, double threshold_x, double threshold_orientation) const;
 
 
@@ -44,10 +45,13 @@ public:
 
   inline std::shared_ptr< fcl::ShapeBase >& getFCLModel() { return fcl_model_; }
   inline fcl::Transform3f& getFCLTransform() { return fcl_transform_; }
+  const std::vector < ContactPtr > & getPointContactSamples() { return point_contact_samples_; }
 
 protected:
   std::string name_;
   Eigen::Isometry3d transform_;
+  std::vector < ContactPtr > line_contact_samples_;
+  std::vector < ContactPtr > point_contact_samples_;
   std::vector < ContactPtr > contact_candidate_;
   std::vector < ContactPtr > contact_environment_;
   std::shared_ptr< fcl::ShapeBase > fcl_model_;
@@ -55,8 +59,6 @@ protected:
 
 
   virtual void updateFCLModel();
-
-  int sample_; ///< number of samples
 
   double mass_;
   double friction_;

@@ -97,7 +97,7 @@ TEST(ContactModelGraphSuite, testCase1)
   g.setPlanningScene(scene);
   g.setStart(start);
   g.setGoal(goal);
-  g.makeGraph();
+  g.makeObjectPoseGraph();
 }
 
 // Run all the tests that were declared with TEST()

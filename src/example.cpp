@@ -17,7 +17,7 @@ int main()
 {
 
   Eigen::Vector3d dim;
-  dim << 0.2, 0.2, 0.2;
+  dim << 0.1, 0.4, 0.2;
   shared_ptr<BoxContactModel> start = make_shared<BoxContactModel>("box", dim);
   shared_ptr<BoxContactModel> goal = make_shared<BoxContactModel>("box", dim);
   shared_ptr<fcl::Box> env_table1 = make_shared<fcl::Box>(0.7, 0.7, 0.05);
@@ -27,6 +27,16 @@ int main()
   Eigen::Isometry3d start_transform;
   Eigen::Isometry3d goal_transform;
 
+  ROS_INFO("START");
+  start->setSampleResolution(3,2);
+  start->createContactSamples();
+  const auto & samples  = start->getPointContactSamples();
+
+  ROS_INFO("START");
+  for(const auto& sample : samples)
+  {
+    std::cout << sample->getContactTransform().translation().transpose() << std::endl;
+  }
   start_transform.linear() = Eigen::Matrix3d::Identity();
   goal_transform.linear() = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(90 * 3.141592/180., Eigen::Vector3d::UnitZ());
   start_transform.translation() << 0.0, 0.0, 0.1;
@@ -52,6 +62,6 @@ int main()
   cout << "Are you ready? : ";
   char h;
   cin >> h;
-  g.makeGraph();
+  g.makeObjectPoseGraph();
   return 0;
 }
