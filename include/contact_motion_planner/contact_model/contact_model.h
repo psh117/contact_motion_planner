@@ -28,7 +28,11 @@ public:
 
   void contactWrenchOptimize();
 
+  /**
+   * @brief createContactSamples
+   */
   virtual void createContactSamples() = 0;
+
   /**
    * @brief operation
    * @param dir Direction we want to move
@@ -36,6 +40,14 @@ public:
    * @return Whether it is possible operation.
    */
   virtual bool operate(OperationDirection dir, double delta_x, double delta_orientation);
+
+  /**
+   * @brief isSamePose
+   * @param model An model to be compared
+   * @param threshold_x Linear threshold
+   * @param threshold_orientation Orientation threshold
+   * @return
+   */
   bool isSamePose(const ContactModel& model, double threshold_x, double threshold_orientation) const;
 
 
@@ -45,13 +57,14 @@ public:
 
   inline std::shared_ptr< fcl::ShapeBase >& getFCLModel() { return fcl_model_; }
   inline fcl::Transform3f& getFCLTransform() { return fcl_transform_; }
-  const std::vector < ContactPtr > & getPointContactSamples() { return point_contact_samples_; }
+  const std::vector < ContactPtr > & getContactSamples() { return contact_samples_; }
 
 protected:
   std::string name_;
   Eigen::Isometry3d transform_;
-  std::vector < ContactPtr > line_contact_samples_;
-  std::vector < ContactPtr > point_contact_samples_;
+  // std::vector < ContactPtr > line_contact_samples_;
+  // std::vector < ContactPtr > point_contact_samples_;
+  std::vector < ContactPtr > contact_samples_;
   std::vector < ContactPtr > contact_candidate_;
   std::vector < ContactPtr > contact_environment_;
   std::shared_ptr< fcl::ShapeBase > fcl_model_;

@@ -30,7 +30,7 @@ int main()
   ROS_INFO("START");
   start->setSampleResolution(2,2);
   start->createContactSamples();
-  const auto & samples  = start->getPointContactSamples();
+  const auto & samples  = start->getContactSamples();
 
   ROS_INFO("START");
   for(const auto& sample : samples)
@@ -63,5 +63,7 @@ int main()
   char h;
   cin >> h;
   g.makeObjectPoseGraph();
+  g.makeObjectContactGraph();
+  g.printContactGraph();
   return 0;
 }
