@@ -21,7 +21,7 @@ public:
     line_samples_per_side_ = lines_per_side;
   }
 
-  virtual void createContactSamples();
+  virtual void createContactSamples(std::vector<ContactPtr> &contact_samples);
   virtual bool operate(OperationDirection dir, double delta_x, double delta_orientation);
   // constraints? how?
 protected:

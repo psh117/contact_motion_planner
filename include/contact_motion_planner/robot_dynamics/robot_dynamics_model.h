@@ -1,5 +1,4 @@
-#ifndef ROBOT_DYNAMICS_MODEL_H
-#define ROBOT_DYNAMICS_MODEL_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -8,16 +7,14 @@
 namespace suhan_contact_planner
 {
 
-
 class RobotDynamicsModel
 {
 public:
   virtual bool isReachable(Eigen::Vector3d position)=0;
   virtual bool isPossibleContact(Eigen::Isometry3d transform)=0;
-
+  virtual Eigen::Matrix<double, 2, 6> getForceLimit()=0;
 };
 
 typedef std::shared_ptr<RobotDynamicsModel> RobotDynamicsModelPtr;
 
 }
-#endif

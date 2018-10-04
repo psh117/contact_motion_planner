@@ -38,10 +38,19 @@ add_library(contact_motion_planner
   src/contact_planner.cpp
   src/planning_scene.cpp
   src/contact_model_graph.cpp
+
   src/contact/contact.cpp
   src/contact_model/contact_model.cpp
   src/contact_model/box_contact_model.cpp
+
   src/robot_dynamics/robot_dynamics_model.cpp
+
+  src/solver/contact_optimization_solver.cpp
+  src/solver/contact_optimization.cpp
+
+  src/solver/constraint/constraint_base.cpp
+  src/solver/constraint/constraint_equality.cpp
+  src/solver/constraint/constraint_inequality.cpp
 )
 target_link_libraries (contact_motion_planner
   fcl
@@ -52,6 +61,7 @@ target_link_libraries (example
   ${catkin_LIBRARIES}
   contact_motion_planner
   fcl
+  qpOASES
 )
 #############
 ## Install ##

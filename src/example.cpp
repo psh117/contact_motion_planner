@@ -7,6 +7,8 @@
 #include "contact_motion_planner/fcl_eigen_utils.h"
 #include "contact_motion_planner/robot_dynamics/dexterous_robot_model.h"
 
+#include "contact_motion_planner/solver/contact_optimization_solver.h"
+
 #include <ros/ros.h>
 
 
@@ -29,8 +31,9 @@ int main()
 
   ROS_INFO("START");
   start->setSampleResolution(2,2);
-  start->createContactSamples();
-  const auto & samples  = start->getContactSamples();
+
+  std::vector<ContactPtr> samples;
+  start->createContactSamples(samples);
 
   ROS_INFO("START");
   for(const auto& sample : samples)

@@ -53,8 +53,8 @@ public:
   {
     ROS_INFO("makeObjectContactGraph");
     auto start_node = std::make_shared<T>(*start_);
-    start_node->createContactSamples();
-    const std::vector< ContactPtr >& contact_samples = start_node->getContactSamples();
+    std::vector<ContactPtr> contact_samples;
+    start_node->createContactSamples(contact_samples);
 
     for(const ContactPtr &c : contact_samples)
     {

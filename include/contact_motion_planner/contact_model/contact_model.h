@@ -31,7 +31,7 @@ public:
   /**
    * @brief createContactSamples
    */
-  virtual void createContactSamples() = 0;
+  virtual void createContactSamples(std::vector<ContactPtr> &contact_samples) = 0;
 
   /**
    * @brief operation
@@ -57,15 +57,28 @@ public:
 
   inline std::shared_ptr< fcl::ShapeBase >& getFCLModel() { return fcl_model_; }
   inline fcl::Transform3f& getFCLTransform() { return fcl_transform_; }
-  const std::vector < ContactPtr > & getContactSamples() { return contact_samples_; }
+
+  inline size_t getContactNumberRobot() { return contact_robot_.size(); }
+  inline size_t getContactNumberEnvironment() { return contact_environment_.size(); }
+  inline size_t getContactNumber() { return getContactNumberEnvironment() + getContactNumberRobot(); }
+
+  const std::vector<ContactPtr>& getContactRobot() const { return contact_robot_; }
+  const std::vector<ContactPtr>& getContactEnvironment() const { return contact_environment_; }
+
+  // const std::vector < ContactPtr > & getContactSamples() { return contact_samples_; }
+  inline double getMass() { return mass_; }
+  inline double getFriction() { return friction_; }
+  void setFriction(double friction) { friction_ = friction; }
 
 protected:
   std::string name_;
   Eigen::Isometry3d transform_;
+  Eigen::Vector3d centor_of_mass_ {0, 0, 0};
+
   // std::vector < ContactPtr > line_contact_samples_;
   // std::vector < ContactPtr > point_contact_samples_;
-  std::vector < ContactPtr > contact_samples_;
-  std::vector < ContactPtr > contact_candidate_;
+  //std::vector < ContactPtr > contact_samples_;
+  std::vector < ContactPtr > contact_robot_;
   std::vector < ContactPtr > contact_environment_;
   std::shared_ptr< fcl::ShapeBase > fcl_model_;
   fcl::Transform3f fcl_transform_;

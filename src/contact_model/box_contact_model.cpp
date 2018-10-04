@@ -13,8 +13,12 @@ BoxContactModel::BoxContactModel(const std::string &name, const Eigen::Vector3d 
                                           dimension_(2));
 }
 
+BoxContactModel::BoxContactModel(const Eigen::Vector3d &dimension) : dimension_(dimension)
+{
+  BoxContactModel("", dimension);
+}
 
-void BoxContactModel::createContactSamples()
+void BoxContactModel::createContactSamples(std::vector <ContactPtr> &contact_samples)
 {
   // Predefined matrix
   const Eigen::Matrix3d rot_x_90 = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(M_PI / 4, Eigen::Vector3d::UnitX());
@@ -35,8 +39,8 @@ void BoxContactModel::createContactSamples()
       new_point_up->setTransform(transform);
       transform.translation()(2) =  - dimension_(2) / 2;
       new_point_down->setTransform(transform);
-      contact_samples_.push_back(new_point_up);
-      contact_samples_.push_back(new_point_down);
+      contact_samples.push_back(new_point_up);
+      contact_samples.push_back(new_point_down);
     }
   }
   // Front and rear
@@ -52,8 +56,8 @@ void BoxContactModel::createContactSamples()
       new_point_front->setTransform(transform);
       transform.translation()(1) =  - dimension_(1) / 2;
       new_point_rear->setTransform(transform);
-      contact_samples_.push_back(new_point_front);
-      contact_samples_.push_back(new_point_rear);
+      contact_samples.push_back(new_point_front);
+      contact_samples.push_back(new_point_rear);
     }
   }
   // Left and right
@@ -69,8 +73,8 @@ void BoxContactModel::createContactSamples()
       new_point_left->setTransform(transform);
       transform.translation()(0) =  - dimension_(0) / 2;
       new_point_right->setTransform(transform);
-      contact_samples_.push_back(new_point_left);
-      contact_samples_.push_back(new_point_right);
+      contact_samples.push_back(new_point_left);
+      contact_samples.push_back(new_point_right);
     }
   }
   
@@ -138,7 +142,7 @@ void BoxContactModel::createContactSamples()
     new_line[11]->setTransform(transform);
 
     for(int i=0; i<12; i++)
-      contact_samples_.push_back(new_line[i]);
+      contact_samples.push_back(new_line[i]);
   }
   
 }
@@ -247,10 +251,6 @@ bool BoxContactModel::operate(OperationDirection dir, double delta_x, double del
   return true;
 }
 
-BoxContactModel::BoxContactModel(const Eigen::Vector3d &dimension) : dimension_(dimension)
-{
-  BoxContactModel("", dimension);
-}
 
 
 }
