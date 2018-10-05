@@ -7,6 +7,7 @@
 
 #include "contact_motion_planner/planning_scene.h"
 #include "robot_dynamics/robot_dynamics_model.h"
+#include <contact_motion_planner/solver/contact_optimization.h>
 #include <ros/ros.h>
 
 //#ifndef MAX_NODE
@@ -102,6 +103,19 @@ public:
           contact_adjacency_list_[current_index_1].push_back(current_index_2);
           contact_adjacency_list_[current_index_2].push_back(current_index_1);
         }
+
+        // FIXME: TEST!!!
+        auto some_node = std::make_shared<T>(*start_);
+        //std::vector<ContactPtr> env_contact;
+        //auto
+        some_node->setContactRobot(node);
+        some_node->setMass(1);
+        //some_node->setContactEnvironment
+        some_node->setFriction(1.0);
+        ContactOptimization op;
+        op.setModel(some_node);
+        op.initializeConstraints();
+        // op.setRobot();
       }
     }
   }

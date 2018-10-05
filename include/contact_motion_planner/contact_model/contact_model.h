@@ -62,6 +62,9 @@ public:
   inline size_t getContactNumberEnvironment() { return contact_environment_.size(); }
   inline size_t getContactNumber() { return getContactNumberEnvironment() + getContactNumberRobot(); }
 
+  void setContactRobot(const std::vector<ContactPtr> & contact_robot) { contact_robot_ = contact_robot; }
+  void setContactEnvironment(const std::vector<ContactPtr> & contact_environment) { contact_environment_ = contact_environment; }
+
   const std::vector<ContactPtr>& getContactRobot() const { return contact_robot_; }
   const std::vector<ContactPtr>& getContactEnvironment() const { return contact_environment_; }
 
@@ -69,6 +72,7 @@ public:
   inline double getMass() { return mass_; }
   inline double getFriction() { return friction_; }
   void setFriction(double friction) { friction_ = friction; }
+  void setMass(double mass) { mass_ = mass; }
 
 protected:
   std::string name_;
@@ -78,8 +82,8 @@ protected:
   // std::vector < ContactPtr > line_contact_samples_;
   // std::vector < ContactPtr > point_contact_samples_;
   //std::vector < ContactPtr > contact_samples_;
-  std::vector < ContactPtr > contact_robot_;
-  std::vector < ContactPtr > contact_environment_;
+  std::vector<ContactPtr> contact_robot_;
+  std::vector<ContactPtr> contact_environment_;
   std::shared_ptr< fcl::ShapeBase > fcl_model_;
   fcl::Transform3f fcl_transform_;
 

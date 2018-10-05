@@ -27,6 +27,8 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
+#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 include_directories(
  include
   ${catkin_INCLUDE_DIRS}
@@ -52,7 +54,9 @@ add_library(contact_motion_planner
   src/solver/constraint/constraint_equality.cpp
   src/solver/constraint/constraint_inequality.cpp
 )
+#set_property(TARGET contact_motion_planner PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries (contact_motion_planner
+  qpOASES
   fcl
 )
 
@@ -61,7 +65,6 @@ target_link_libraries (example
   ${catkin_LIBRARIES}
   contact_motion_planner
   fcl
-  qpOASES
 )
 #############
 ## Install ##

@@ -30,6 +30,8 @@ private:
   MatrixXdRow  H_row_, A_row_;
   Eigen::VectorXd A_lower_bound_, A_upper_bound_, lower_bound_, upper_bound_;
 
+  Eigen::VectorXd x_solved_;
+
   size_t contact_number_;
 
 

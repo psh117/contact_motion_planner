@@ -7,8 +7,11 @@ ConstraintEquality::ConstraintEquality(const std::string &name) : ConstraintBase
 
 void ConstraintEquality::setEqualityCondition(const Eigen::VectorXd & b)
 {
-  lower_bound_ = b;
-  upper_bound_ = b;
+  //Eigen::VectorXd ones(b);
+  //ones.setConstant(1);
+
+  lower_bound_ = b;// - 10. * ones;
+  upper_bound_ = b;// + 10. * ones;
 }
 
 void ConstraintEquality::printCondition()

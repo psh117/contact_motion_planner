@@ -7,7 +7,7 @@
 #include "contact_motion_planner/fcl_eigen_utils.h"
 #include "contact_motion_planner/robot_dynamics/dexterous_robot_model.h"
 
-#include "contact_motion_planner/solver/contact_optimization_solver.h"
+#include "contact_motion_planner/solver/contact_optimization.h"
 
 #include <ros/ros.h>
 
@@ -65,8 +65,14 @@ int main()
   cout << "Are you ready? : ";
   char h;
   cin >> h;
-  g.makeObjectPoseGraph();
+  // g.makeObjectPoseGraph();
   g.makeObjectContactGraph();
   g.printContactGraph();
+
+  //start->cont
+
+  // Test Contact Opt.
+
+
   return 0;
 }
