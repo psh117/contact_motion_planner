@@ -20,15 +20,25 @@ namespace suhan_contact_planner
 template <class T>
 class ContactModelGraph
 {
-  std::vector< std::vector<int> > adjacency_list_;
-  std::vector<std::shared_ptr<T> > contact_models_;
+  // Model state graph
+  std::vector< std::vector<int> > state_adjacency_list_;
+  std::vector<ContactModelPtr> contact_model_states_;
+  size_t contact_models_index_;
 
+  // Contact graph
   std::vector< std::vector<ContactPtr> > contact_nodes_;
   size_t contact_node_index_;
   std::vector< std::vector<int> > contact_adjacency_list_;
 
-  size_t contact_models_index_;
-  std::vector<std::shared_ptr<T> > result_;
+  // Total graph
+  std::vector<ContactModelPtr> combinated_nodes_;
+  std::vector<std::vector<int> > combinated_adjacency_list_;
+  std::vector<bool> state_nodes_visit_;
+  std::vector<bool> contact_nodes_visit_;
+
+  // Result
+  std::vector<ContactModelPtr> result_;
+
 
   PlanningScenePtr planning_scene_;
   RobotDynamicsModelPtr robot_dynamics_model_;
@@ -42,7 +52,7 @@ class ContactModelGraph
 
 public:
 
-  ContactModelGraph() : discrete_resolution_(0.05), angle_resolution_(0.62832), max_depth_(100) {}
+  ContactModelGraph() : discrete_resolution_(0.1), angle_resolution_(0.62832), max_depth_(100) {}
 
   void setStart(const std::shared_ptr<T> &start) { start_ = start; }
   void setGoal(const std::shared_ptr<T> &goal) { goal_ = goal; }
@@ -50,10 +60,69 @@ public:
   void setRobotDynamicsModel(const RobotDynamicsModelPtr &model_ptr) { robot_dynamics_model_ = model_ptr; }
 
 
+  void makeCombinationGraph()
+  {
+    combinated_nodes_.clear();
+    combinated_adjacency_list_.clear();
+    state_nodes_visit_.resize(contact_nodes_.size(), false);
+    contact_nodes_visit_.resize(contact_nodes_.size(), false);
+
+    // First, start with zero contact state
+    ContactModelPtr node = std::make_shared<T>(*(dynamic_cast<T*>(contact_model_states_[0].get())));
+    node->setContactRobot(std::vector<ContactPtr>());
+    // we need to add bottom contact
+
+    combinated_nodes_.push_back(node);
+    combinated_adjacency_list_.push_back(std::vector<int>());
+
+    makeContactCombinationBranch(0, 0, 0);
+  }
+  void makeContactCombinationBranch(int model_index, int contact_index, int total_index)
+  {
+    ContactModelPtr node = std::make_shared<T>(*(dynamic_cast<T*>(contact_model_states_[model_index].get())));
+
+    // Optimization to find the stability
+    node->setContactRobot(contact_nodes_[contact_index]);
+    ContactOptimization op;
+    op.setModel(node);
+    if(!op.solve())
+    {
+      // Unstable Contacts --> pruning
+      return;
+    }
+
+    // Add to graph
+    int total_now_index = combinated_nodes_.size();
+    combinated_nodes_.push_back(node);
+    combinated_adjacency_list_.push_back(std::vector<int>());
+    combinated_adjacency_list_[total_index].push_back(total_now_index);
+    combinated_adjacency_list_[total_now_index].push_back(total_index);
+
+    // Recursive
+    for(int new_index: contact_adjacency_list_[contact_index])
+    {
+      if(!contact_nodes_visit_[new_index])
+      {
+        contact_nodes_visit_[new_index] = true;
+        makeContactCombinationBranch(model_index, new_index, total_now_index);
+        contact_nodes_visit_[new_index] = false;
+      }
+    }
+    for(int new_index: state_adjacency_list_[contact_index])
+    {
+      if(!state_nodes_visit_[new_index])
+      {
+        state_nodes_visit_[new_index] = true;
+        makeContactCombinationBranch(new_index, contact_index, total_now_index);
+        state_nodes_visit_[new_index] = false;
+      }
+    }
+  }
+
   void makeObjectContactGraph()
   {
     ROS_INFO("makeObjectContactGraph");
-    auto start_node = std::make_shared<T>(*start_);
+    ContactModelPtr start_node = std::make_shared<T>(*(dynamic_cast<T*>(start_.get())));
     std::vector<ContactPtr> contact_samples;
     start_node->createContactSamples(contact_samples);
 
@@ -105,16 +174,15 @@ public:
         }
 
         // FIXME: TEST!!!
-        auto some_node = std::make_shared<T>(*start_);
+        /*
+        auto some_node = std::make_shared<T>(*(dynamic_cast<T*>(start_.get())));;
         //std::vector<ContactPtr> env_contact;
         //auto
         some_node->setContactRobot(node);
-        some_node->setMass(1);
-        //some_node->setContactEnvironment
-        some_node->setFriction(1.0);
         ContactOptimization op;
         op.setModel(some_node);
         op.initializeConstraints();
+        */
         // op.setRobot();
       }
     }
@@ -133,9 +201,9 @@ public:
   void makeObjectPoseGraph()
   {
     ROS_INFO("makeObjectPoseGraph");
-    contact_models_.clear();
-    contact_models_.push_back(start_);
-    adjacency_list_.push_back(std::vector<int>());
+    contact_model_states_.clear();
+    contact_model_states_.push_back(start_);
+    state_adjacency_list_.push_back(std::vector<int>());
     contact_models_index_ = 1;
     result_.clear();
 
@@ -151,7 +219,7 @@ public:
   }
 
 private:
-  bool processOperatedNode(std::shared_ptr<T> new_node, int current_index, int depth)
+  bool processOperatedNode(ContactModelPtr new_node, int current_index, int depth)
   {
     // print DEBUG
     auto& trans = new_node->getPosition();
@@ -161,11 +229,11 @@ private:
       ROS_INFO("arrived at goal depth = %d", depth);
       // final arrived
       int index = contact_models_index_;
-      contact_models_.push_back(new_node);
-      adjacency_list_.push_back(std::vector<int>());
+      contact_model_states_.push_back(new_node);
+      state_adjacency_list_.push_back(std::vector<int>());
       contact_models_index_++;
-      adjacency_list_[index].push_back(current_index);
-      adjacency_list_[current_index].push_back(index);
+      state_adjacency_list_[index].push_back(current_index);
+      state_adjacency_list_[current_index].push_back(index);
 
       result_.push_back(new_node);
       return true;
@@ -173,21 +241,21 @@ private:
     }
 
     bool detectedSamePose = false;
-    for(auto it=contact_models_.begin(); it!=contact_models_.end(); it++) //
+    for(auto it=contact_model_states_.begin(); it!=contact_model_states_.end(); it++) //
     {
       if (new_node->isSamePose(*(*it), discrete_resolution_ * 0.5, angle_resolution_*0.5))
       {
         //ROS_INFO("same pose detected");
         detectedSamePose = true;
-        int index = std::distance(contact_models_.begin(), it);
-        for(int connected_index : adjacency_list_[index])
+        int index = std::distance(contact_model_states_.begin(), it);
+        for(int connected_index : state_adjacency_list_[index])
         {
-          if(std::find(adjacency_list_[connected_index].begin(),    // If not connected yet,
-                       adjacency_list_[connected_index].end(),
-                       index) == adjacency_list_[connected_index].end())
+          if(std::find(state_adjacency_list_[connected_index].begin(),    // If not connected yet,
+                       state_adjacency_list_[connected_index].end(),
+                       index) == state_adjacency_list_[connected_index].end())
           {
-            adjacency_list_[connected_index].push_back(current_index);
-            adjacency_list_[current_index].push_back(connected_index);
+            state_adjacency_list_[connected_index].push_back(current_index);
+            state_adjacency_list_[current_index].push_back(connected_index);
           }
         }
       }
@@ -199,11 +267,11 @@ private:
       if (planning_scene_->isPossible() && robot_dynamics_model_->isReachable(new_node->getPosition())) // if feasible point
       {
         int index = contact_models_index_;
-        contact_models_.push_back(new_node);
-        adjacency_list_.push_back(std::vector<int>());
+        contact_model_states_.push_back(new_node);
+        state_adjacency_list_.push_back(std::vector<int>());
         contact_models_index_++;
-        adjacency_list_[index].push_back(current_index);
-        adjacency_list_[current_index].push_back(index);
+        state_adjacency_list_[index].push_back(current_index);
+        state_adjacency_list_[current_index].push_back(index);
 
         if(makeObjectStateTree(index, depth+1))
         {
@@ -226,7 +294,7 @@ private:
 
     for(int dir=ContactModel::DIR_X; dir<ContactModel::DIR_ROLL; dir++) // Test every direction
     {
-      auto new_node = std::make_shared<T>(*(contact_models_[current_index])); // Creation of new node
+      ContactModelPtr new_node = std::make_shared<T>(*(dynamic_cast<T*>(contact_model_states_[current_index].get()))); // Creation of new node
       if(new_node->operate(static_cast<ContactModel::OperationDirection>(dir), discrete_resolution_, angle_resolution_)) // If operation is available + operate it
       {
         if(processOperatedNode(new_node, current_index, depth)) return true;

@@ -9,7 +9,7 @@ void ContactOptimization::setModel(ContactModelPtr model)
 void ContactOptimization::setRobot(RobotDynamicsModelPtr robot)
 { robot_ = robot; }
 
-void ContactOptimization::initializeConstraints()
+bool ContactOptimization::solve()
 {
   ContactOptimizationSolver solver;
 
@@ -137,8 +137,7 @@ void ContactOptimization::initializeConstraints()
   ineq_constraint->setOnlyLowerBound(d_all);
   solver.addConstraint(ineq_constraint);
   solver.setContactNumber(model_->getContactNumber());
-  solver.solve();
-
+  return solver.solve();
 }
 
 } // namespace suhan_contact_planner

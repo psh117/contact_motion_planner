@@ -17,11 +17,16 @@ using namespace std;
 using namespace suhan_contact_planner;
 int main()
 {
-
+  std::vector<ContactPtr> env_conatc_vector;
   Eigen::Vector3d dim;
   dim << 0.1, 0.4, 0.2;
   shared_ptr<BoxContactModel> start = make_shared<BoxContactModel>("box", dim);
-  shared_ptr<BoxContactModel> goal = make_shared<BoxContactModel>("box", dim);
+  start->setMass(1);
+  start->setFriction(1.0);
+  start->setSampleResolution(2,2);
+  env_conatc_vector.push_back(start->getBottomContact());
+  start->setContactEnvironment(env_conatc_vector);
+  shared_ptr<BoxContactModel> goal = make_shared<BoxContactModel>(*start);
   shared_ptr<fcl::Box> env_table1 = make_shared<fcl::Box>(0.7, 0.7, 0.05);
   shared_ptr<fcl::Box> env_obstacle1 = make_shared<fcl::Box>(0.1, 0.1, 0.5);
   Eigen::Isometry3d env_table1_transform;
@@ -30,7 +35,6 @@ int main()
   Eigen::Isometry3d goal_transform;
 
   ROS_INFO("START");
-  start->setSampleResolution(2,2);
 
   std::vector<ContactPtr> samples;
   start->createContactSamples(samples);
@@ -65,9 +69,10 @@ int main()
   cout << "Are you ready? : ";
   char h;
   cin >> h;
-  // g.makeObjectPoseGraph();
+  g.makeObjectPoseGraph();
   g.makeObjectContactGraph();
   g.printContactGraph();
+  g.makeCombinationGraph();
 
   //start->cont
 

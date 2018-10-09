@@ -13,7 +13,7 @@ public:
   {
     //ROS_INFO("%lf %lf %lf", position[0], position[1], position[2]);
     //std::cout << position.transpose() << std::endl;
-    return (position.norm() < 1.0);
+    return (position.norm() < 0.5);
   }
   virtual bool isPossibleContact(Eigen::Isometry3d transform) override { return true; }
 

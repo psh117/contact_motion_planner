@@ -50,6 +50,7 @@ public:
    */
   bool isSamePose(const ContactModel& model, double threshold_x, double threshold_orientation) const;
 
+  virtual ContactPtr getBottomContact() = 0;
 
   inline const Eigen::Vector3d getPosition() const {return transform_.translation(); }
   void setTransform(const Eigen::Isometry3d &transform) { transform_ = transform; updateFCLModel(); }

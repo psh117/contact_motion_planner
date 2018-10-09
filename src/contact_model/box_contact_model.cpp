@@ -20,6 +20,7 @@ BoxContactModel::BoxContactModel(const Eigen::Vector3d &dimension) : dimension_(
 
 void BoxContactModel::createContactSamples(std::vector <ContactPtr> &contact_samples)
 {
+  // TODO: Check the orientation of the contact
   // Predefined matrix
   const Eigen::Matrix3d rot_x_90 = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(M_PI / 4, Eigen::Vector3d::UnitX());
   const Eigen::Matrix3d rot_y_90 = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(M_PI / 4, Eigen::Vector3d::UnitY());
@@ -175,6 +176,7 @@ bool BoxContactModel::operate(OperationDirection dir, double delta_x, double del
     case DIR_Z:
       transform_operated.translation()(2) = delta_x;
       transform_ = transform_ * transform_operated;
+      contact_environment_.clear();
       break;
 
     // TODO: The rotation should be rotated w.r.t contact point not the center of the object.
@@ -249,6 +251,20 @@ bool BoxContactModel::operate(OperationDirection dir, double delta_x, double del
 
   updateFCLModel();
   return true;
+}
+
+ContactPtr BoxContactModel::getBottomContact()
+{
+  ContactPtr contact = std::make_shared<Contact>(Contact::ContactState::CONTACT_FACE, Contact::ContactRelation::CONTACT_OBJ_ENV);
+  Eigen::Isometry3d transform;
+
+  transform.translation()(0) =  0;
+  transform.translation()(1) =  0;
+  transform.translation()(2) =  - dimension_(2) / 2;
+  transform.linear() = Eigen::Matrix3d::Identity();
+
+  contact->setTransform(transform);
+  return contact;
 }
 
 

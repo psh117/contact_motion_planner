@@ -18,7 +18,7 @@ public:
 
   void setModel(ContactModelPtr model);
   void setRobot(RobotDynamicsModelPtr robot);
-  void initializeConstraints();
+  bool solve();
 
 private:
   ContactModelPtr model_;
