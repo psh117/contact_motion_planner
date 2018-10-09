@@ -11,7 +11,7 @@ class RobotDynamicsModel
 {
 public:
   virtual bool isReachable(Eigen::Vector3d position)=0;
-  virtual bool isPossibleContact(Eigen::Isometry3d transform)=0;
+  virtual bool isPossibleContact(Eigen::Affine3d transform)=0;
   virtual Eigen::Matrix<double, 2, 6> getForceLimit()=0;
 };
 

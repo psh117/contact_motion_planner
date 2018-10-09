@@ -18,7 +18,7 @@ using namespace suhan_contact_planner;
 
 TEST(EigenFCLUtilsTestSuite, testCase1)
 {
-  Eigen::Isometry3d transform_eigen;
+  Eigen::Affine3d transform_eigen;
   fcl::Transform3f transform_fcl;
 
   Eigen::Vector3d trans;
@@ -38,8 +38,8 @@ TEST(EigenFCLUtilsTestSuite, testCase1)
 TEST(PlanningSceneSuite, testCase1)
 {
   Eigen::Vector3d dim;
-  Eigen::Isometry3d transform;
-  Eigen::Isometry3d transform_env1;
+  Eigen::Affine3d transform;
+  Eigen::Affine3d transform_env1;
   transform.linear() = Eigen::Matrix3d::Identity();
   transform.translation() << 0, 0, 0;
   transform_env1.linear() = Eigen::Matrix3d::Identity();
@@ -70,10 +70,10 @@ TEST(ContactModelGraphSuite, testCase1)
   shared_ptr<BoxContactModel> goal = make_shared<BoxContactModel>("box", dim);
   shared_ptr<fcl::Box> env_table1 = make_shared<fcl::Box>(0.7, 0.7, 0.05);
   shared_ptr<fcl::Box> env_obstacle1 = make_shared<fcl::Box>(0.1, 0.1, 0.5);
-  Eigen::Isometry3d env_table1_transform;
-  Eigen::Isometry3d env_obstacle1_transform;
-  Eigen::Isometry3d start_transform;
-  Eigen::Isometry3d goal_transform;
+  Eigen::Affine3d env_table1_transform;
+  Eigen::Affine3d env_obstacle1_transform;
+  Eigen::Affine3d start_transform;
+  Eigen::Affine3d goal_transform;
 
   start_transform.linear() = Eigen::Matrix3d::Identity();
   goal_transform.linear() = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(90 * 3.141592/180., Eigen::Vector3d::UnitZ());

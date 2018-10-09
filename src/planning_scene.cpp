@@ -28,7 +28,7 @@ bool PlanningScene::isPossible() const
                              transforms_[i],
                              NULL))
     {
-      ROS_INFO("not possible %d", i);
+      ROS_INFO("not possible %d", (int)i);
       return false; // not possible because there is a collision
     }
   }
@@ -36,7 +36,7 @@ bool PlanningScene::isPossible() const
 }
 
 
-void PlanningScene::addSceneObject(const std::shared_ptr<fcl::ShapeBase> &shape, const Eigen::Isometry3d &transform)
+void PlanningScene::addSceneObject(const std::shared_ptr<fcl::ShapeBase> &shape, const Eigen::Affine3d &transform)
 {
   fcl::Transform3f fcl_transform;
   FCLEigenUtils::convertTransform(transform, fcl_transform);

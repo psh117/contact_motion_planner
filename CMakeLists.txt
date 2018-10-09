@@ -15,6 +15,8 @@ find_package(fcl REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   tf2
+  tf2_ros
+  tf2_geometry_msgs
   moveit_core
   moveit_ros_planning
   moveit_ros_planning_interface

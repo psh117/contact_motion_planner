@@ -13,9 +13,9 @@ public:
   {
     //ROS_INFO("%lf %lf %lf", position[0], position[1], position[2]);
     //std::cout << position.transpose() << std::endl;
-    return (position.norm() < 0.5);
+    return (position.norm() < 0.3);
   }
-  virtual bool isPossibleContact(Eigen::Isometry3d transform) override { return true; }
+  virtual bool isPossibleContact(Eigen::Affine3d transform) override { return true; }
 
   // for grasp contact
   virtual Eigen::Matrix<double, 2, 6> getForceLimit() override

@@ -83,13 +83,17 @@ public:
 
     // Optimization to find the stability
     node->setContactRobot(contact_nodes_[contact_index]);
+    node->setMass(start_->getMass());
+    node->setFriction(start_->getFriction());
     ContactOptimization op;
     op.setModel(node);
     if(!op.solve())
     {
+      std::cout << "cannot solve" << std::endl;
       // Unstable Contacts --> pruning
       return;
     }
+    std::cout << "solved" << std::endl;
 
     // Add to graph
     int total_now_index = combinated_nodes_.size();
@@ -108,7 +112,7 @@ public:
         contact_nodes_visit_[new_index] = false;
       }
     }
-    for(int new_index: state_adjacency_list_[contact_index])
+    for(int new_index: state_adjacency_list_[model_index])
     {
       if(!state_nodes_visit_[new_index])
       {
@@ -211,7 +215,7 @@ public:
 
     for(auto& node : result_)
     {
-      Eigen::Isometry3d transform = node->getTransform();
+      Eigen::Affine3d transform = node->getTransform();
       auto& trans = node->getPosition();
       ROS_INFO("TTTT %lf %lf %lf",trans[0], trans[1], trans[2]);
       std::cout << transform.linear() << std::endl;

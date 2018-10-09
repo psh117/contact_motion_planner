@@ -39,7 +39,7 @@ bool ContactOptimizationSolver::solve()
   }
 
   int iter = 1000;
-  bool result;
+  int result;
   A_row_ = A_;
   if(!hot_start_)
   {
@@ -68,6 +68,7 @@ bool ContactOptimizationSolver::solve()
   if (result == qpOASES::SUCCESSFUL_RETURN)
   {
     qproblem_.getPrimalSolution(x_solved_.data());
+    std::cout << x_solved_.transpose() << std::endl;
     qproblem_.reset();
     return true;
   }
@@ -91,7 +92,7 @@ void ContactOptimizationSolver::resize(int total_row)
 
   options.setToDefault();
   options.initialStatusBounds = qpOASES::ST_INACTIVE;
-  options.printLevel          = qpOASES::PL_LOW;
+  options.printLevel          = qpOASES::PL_NONE;
   options.enableRegularisation = qpOASES::BT_TRUE;
   options.enableEqualities = qpOASES::BT_TRUE;
   qproblem_ = qpOASES::SQProblem(contact_number_ * 6, total_row);

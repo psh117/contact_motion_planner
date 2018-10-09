@@ -53,8 +53,8 @@ public:
   virtual ContactPtr getBottomContact() = 0;
 
   inline const Eigen::Vector3d getPosition() const {return transform_.translation(); }
-  void setTransform(const Eigen::Isometry3d &transform) { transform_ = transform; updateFCLModel(); }
-  inline const Eigen::Isometry3d getTransform() const { return transform_; }
+  void setTransform(const Eigen::Affine3d &transform) { transform_ = transform; updateFCLModel(); }
+  inline const Eigen::Affine3d getTransform() const { return transform_; }
 
   inline std::shared_ptr< fcl::ShapeBase >& getFCLModel() { return fcl_model_; }
   inline fcl::Transform3f& getFCLTransform() { return fcl_transform_; }
@@ -65,6 +65,8 @@ public:
 
   void setContactRobot(const std::vector<ContactPtr> & contact_robot) { contact_robot_ = contact_robot; }
   void setContactEnvironment(const std::vector<ContactPtr> & contact_environment) { contact_environment_ = contact_environment; }
+  void setContactEnvironment(const ContactPtr contact_environment) { contact_environment_.clear();
+                                                                     contact_environment_.push_back(contact_environment); }
 
   const std::vector<ContactPtr>& getContactRobot() const { return contact_robot_; }
   const std::vector<ContactPtr>& getContactEnvironment() const { return contact_environment_; }
@@ -75,9 +77,10 @@ public:
   void setFriction(double friction) { friction_ = friction; }
   void setMass(double mass) { mass_ = mass; }
 
+
 protected:
   std::string name_;
-  Eigen::Isometry3d transform_;
+  Eigen::Affine3d transform_;
   Eigen::Vector3d centor_of_mass_ {0, 0, 0};
 
   // std::vector < ContactPtr > line_contact_samples_;
@@ -87,6 +90,8 @@ protected:
   std::vector<ContactPtr> contact_environment_;
   std::shared_ptr< fcl::ShapeBase > fcl_model_;
   fcl::Transform3f fcl_transform_;
+
+  OperationDirection line_contact_direction_;
 
 
   virtual void updateFCLModel();

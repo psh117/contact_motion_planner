@@ -23,7 +23,7 @@ bool ContactOptimization::solve()
 
   const double contact_number = model_->getContactNumber();
   Eigen::Vector3d gravity;
-  gravity << 0, 0, -9.8;
+  gravity << 0, 0, 9.8;
   A.setZero(6, contact_number * 6);
   b.setZero(6);
   b.head<3>() = model_R * gravity * model_->getMass();  // TODO: Check this
@@ -35,6 +35,7 @@ bool ContactOptimization::solve()
   }
   eq_constraint->setA(A);
   eq_constraint->setEqualityCondition(b);
+
   solver.addConstraint(eq_constraint);
 
   std::vector<ContactPtr> contacts;
