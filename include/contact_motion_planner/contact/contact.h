@@ -1,6 +1,6 @@
-#ifndef CONTACT_H
-#define CONTACT_H
+#pragma once
 
+#include <iostream>
 #include <memory>
 #include <vector>
 #include <Eigen/Dense>
@@ -22,6 +22,8 @@ public:
   void setTransform(const Eigen::Affine3d& transform) { transform_ = transform; }
   void setContactState(ContactState state) { contact_state_ = state; }
 
+  void printContactState();
+
 protected:
   ContactRelation contact_relation_;
   ContactState contact_state_;
@@ -42,4 +44,3 @@ typedef std::shared_ptr<Contact> ContactPtr;
 
 
 }
-#endif

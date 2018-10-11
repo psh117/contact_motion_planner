@@ -28,7 +28,7 @@ bool PlanningScene::isPossible() const
                              transforms_[i],
                              NULL))
     {
-      ROS_INFO("not possible %d", (int)i);
+      // ROS_INFO("not possible %d", (int)i);
       return false; // not possible because there is a collision
     }
   }

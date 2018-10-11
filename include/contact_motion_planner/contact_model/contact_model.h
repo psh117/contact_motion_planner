@@ -24,7 +24,7 @@ public:
   ContactModel() : name_("") {}
   ContactModel(std::string name) : name_(name) {}
 
-  enum OperationDirection : int {DIR_X=0, DIR_Y, DIR_Z, DIR_YAW, DIR_PITCH, DIR_ROLL};
+  enum OperationDirection : int {DIR_Z=0, DIR_Y, DIR_X, DIR_YAW, DIR_PITCH, DIR_ROLL};
 
   void contactWrenchOptimize();
 
@@ -74,9 +74,13 @@ public:
   // const std::vector < ContactPtr > & getContactSamples() { return contact_samples_; }
   inline double getMass() { return mass_; }
   inline double getFriction() { return friction_; }
+  virtual double getBottomPositionZ() = 0;
   void setFriction(double friction) { friction_ = friction; }
   void setMass(double mass) { mass_ = mass; }
+  void setGoalNode() { goal_node_ = true; }
+  bool goalNode() { return goal_node_; }
 
+  void copyContactEnvironment();
 
 protected:
   std::string name_;
@@ -94,10 +98,12 @@ protected:
   OperationDirection line_contact_direction_;
 
 
+
   virtual void updateFCLModel();
 
-  double mass_;
-  double friction_;
+  bool goal_node_ {false};
+  double mass_ {1.0};
+  double friction_ {1.0};
 
   //virtual void sample() = 0;
 };

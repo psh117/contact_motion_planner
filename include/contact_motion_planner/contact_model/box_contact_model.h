@@ -24,6 +24,7 @@ public:
   virtual void createContactSamples(std::vector<ContactPtr> &contact_samples) override;
   virtual bool operate(OperationDirection dir, double delta_x, double delta_orientation) override;
   virtual ContactPtr getBottomContact() override;
+  virtual inline double getBottomPositionZ() override;
   // constraints? how?
 protected:
 

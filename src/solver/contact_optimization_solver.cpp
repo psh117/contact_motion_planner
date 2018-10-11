@@ -15,7 +15,7 @@ void ContactOptimizationSolver::addConstraint(ConstraintBasePtr cb)
 void ContactOptimizationSolver::setContactNumber(int contact_number)
 { contact_number_ = contact_number; }
 
-bool ContactOptimizationSolver::solve()
+bool ContactOptimizationSolver::solve(Eigen::VectorXd& result_force)
 {
   size_t total_row = 0;
   for(auto & constraint : constraints)
@@ -68,7 +68,8 @@ bool ContactOptimizationSolver::solve()
   if (result == qpOASES::SUCCESSFUL_RETURN)
   {
     qproblem_.getPrimalSolution(x_solved_.data());
-    std::cout << x_solved_.transpose() << std::endl;
+    result_force = x_solved_;
+    //std::cout << x_solved_.transpose() << std::endl;
     qproblem_.reset();
     return true;
   }

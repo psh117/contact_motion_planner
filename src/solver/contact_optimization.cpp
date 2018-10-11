@@ -19,14 +19,13 @@ bool ContactOptimization::solve()
   Eigen::VectorXd b;
 
   // TODO: gravity
-  const auto model_R = model_->getTransform().linear();
 
   const double contact_number = model_->getContactNumber();
-  Eigen::Vector3d gravity;
-  gravity << 0, 0, 9.8;
+  if (contact_number == 0) return false;
   A.setZero(6, contact_number * 6);
   b.setZero(6);
-  b.head<3>() = model_R * gravity * model_->getMass();  // TODO: Check this
+  b.head<3>() =  model_->getTransform().linear() *
+      Eigen::Vector3d(0,0,9.8) * model_->getMass();  // TODO: Check this
   // TODO: Momentum + b(3~5)
   for(size_t i=0; i<contact_number; i++)
   {
@@ -138,7 +137,20 @@ bool ContactOptimization::solve()
   ineq_constraint->setOnlyLowerBound(d_all);
   solver.addConstraint(ineq_constraint);
   solver.setContactNumber(model_->getContactNumber());
-  return solver.solve();
+  Eigen::VectorXd result;
+  if(solver.solve(result))
+  {
+
+    auto &contacs = model_->getContactRobot();
+    for(int i=0; i<contacs.size();i++)
+    {
+      // TODO: Force update!
+      // TODO: Contact copy is needed!
+      //contacts[i]->set
+    }
+    return true;
+  }
+  return false;
 }
 
 } // namespace suhan_contact_planner

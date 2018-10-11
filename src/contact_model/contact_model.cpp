@@ -93,4 +93,14 @@ void ContactModel::updateFCLModel()
   FCLEigenUtils::convertTransform(transform_, fcl_transform_);
 }
 
+void ContactModel::copyContactEnvironment()
+{
+  std::vector<ContactPtr>::iterator it;
+  for (it = contact_environment_.begin(); it < contact_environment_.end(); it++)
+  {
+    ContactPtr new_contact = std::make_shared<Contact>(*(*it));
+    *it = new_contact;
+  }
+}
+
 }

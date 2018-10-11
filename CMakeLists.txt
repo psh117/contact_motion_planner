@@ -46,6 +46,7 @@ add_library(contact_motion_planner
   src/contact/contact.cpp
   src/contact_model/contact_model.cpp
   src/contact_model/box_contact_model.cpp
+  src/contact_model/visualization/contact_model_visualization.cpp
 
   src/robot_dynamics/robot_dynamics_model.cpp
 

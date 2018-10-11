@@ -101,59 +101,67 @@ void BoxContactModel::createContactSamples(std::vector <ContactPtr> &contact_sam
       new_line[i] = std::make_shared<Contact>(Contact::ContactState::CONTACT_LINE);
 
     // Up and down
-    ContactPtr new_line_down = std::make_shared<Contact>(Contact::ContactState::CONTACT_LINE);
     transform.linear() = Eigen::Matrix3d::Identity();
     transform.translation()(0) = dimension_(0) / (line_samples_per_side_+1) * (i+1) - dimension_(0)/2;
     transform.translation()(1) = 0;
+    transform.linear() = Eigen::Matrix3d::Identity() *
+        Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitX());
     transform.translation()(2) = dimension_(2) / 2;
     new_line[0]->setTransform(transform);
+    transform.linear() = Eigen::Matrix3d::Identity();
     transform.translation()(2) = -dimension_(2) / 2;
     new_line[1]->setTransform(transform);
 
-    transform.linear() = rot_z_90;
     transform.translation()(0) = 0;
     transform.translation()(1) = dimension_(1) / (line_samples_per_side_+1) * (i+1) - dimension_(1)/2;
     transform.translation()(2) = dimension_(2) / 2;
+    transform.linear() = Eigen::Matrix3d::Identity() *
+        Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitX()) * rot_z_90;
     new_line[2]->setTransform(transform);
+    transform.linear() = Eigen::Matrix3d::Identity() * rot_z_90;
     transform.translation()(2) = -dimension_(2) / 2;
     new_line[3]->setTransform(transform);
 
     // Front and rear
-    transform.linear() = rot_x_90;
     transform.translation()(0) = 0;
     transform.translation()(2) = dimension_(2) / (line_samples_per_side_+1) * (i+1) - dimension_(2)/2;
 
     transform.translation()(1) = dimension_(1) / 2;
+    transform.linear() = rot_x_90;
     new_line[4]->setTransform(transform);
     transform.translation()(1) = -dimension_(1) / 2;
+    transform.linear() = rot_x_m90;
     new_line[5]->setTransform(transform);
 
-    transform.linear() = rot_x_90 * rot_z_90;
     transform.translation()(2) = 0;
     transform.translation()(0) = dimension_(0) / (line_samples_per_side_+1) * (i+1) - dimension_(0)/2;
 
     transform.translation()(1) = dimension_(1) / 2;
+    transform.linear() = rot_x_90 * rot_z_90;
     new_line[6]->setTransform(transform);
+    transform.linear() = rot_x_m90 * rot_z_90;
     transform.translation()(1) = -dimension_(1) / 2;
     new_line[7]->setTransform(transform);
 
     // Left and right
-    transform.linear() = rot_y_90;
     transform.translation()(2) = 0;
     transform.translation()(1) = dimension_(1) / (line_samples_per_side_+1) * (i+1) - dimension_(1)/2;
 
     transform.translation()(0) = dimension_(0) / 2;
+    transform.linear() = rot_y_m90;
     new_line[8]->setTransform(transform);
+    transform.linear() = rot_y_90;
     transform.translation()(0) = -dimension_(0) / 2;
     new_line[9]->setTransform(transform);
 
-    transform.linear() = rot_y_90 * rot_z_90;
     transform.translation()(1) = 0;
     transform.translation()(2) = dimension_(2) / (line_samples_per_side_+1) * (i+1) - dimension_(2)/2;
 
     transform.translation()(0) = dimension_(0) / 2;
+    transform.linear() = rot_y_m90 * rot_z_90;
     new_line[10]->setTransform(transform);
     transform.translation()(0) = -dimension_(0) / 2;
+    transform.linear() = rot_y_90 * rot_z_90;
     new_line[11]->setTransform(transform);
 
     for(int i=0; i<12; i++)
@@ -315,6 +323,10 @@ ContactPtr BoxContactModel::getBottomContact()
   return contact;
 }
 
+double BoxContactModel::getBottomPositionZ()
+{
+  return - dimension_(2) / 2;
+}
 
 
 }
