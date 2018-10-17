@@ -7,7 +7,6 @@ namespace suhan_contact_planner
 
 class DexterousRobotModel : public RobotDynamicsModel
 {
-
 public:
   virtual bool isReachable(Eigen::Vector3d position) override
   {
@@ -24,7 +23,6 @@ public:
     //for(int )
     //limit_matrix
   }
-
 };
 
 }

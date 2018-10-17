@@ -36,7 +36,6 @@ private:
   Eigen::Affine3d transform_; ///< Contact position transform w.r.t object frame (\f$objH_c\f$)
 
   Eigen::Matrix<double, 6, 1> contact_force_torque_;
-
 };
 
 typedef std::shared_ptr<Contact> ContactPtr;

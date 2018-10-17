@@ -78,7 +78,6 @@ bool ContactOptimizationSolver::solve(Eigen::VectorXd& result_force)
     // std::cout << "qp solve failed: " << result << std::endl;
     return false;
   }
-
 }
 
 void ContactOptimizationSolver::resize(int total_row)
