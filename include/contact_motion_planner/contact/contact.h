@@ -21,8 +21,11 @@ public:
 
   void setTransform(const Eigen::Affine3d& transform) { transform_ = transform; }
   void setContactState(ContactState state) { contact_state_ = state; }
+  void setContactForceTorque(const Eigen::Matrix<double, 6, 1>& force_torque)
+  { contact_force_torque_ = force_torque; }
 
   void printContactState();
+
 
 protected:
   ContactRelation contact_relation_;
@@ -31,12 +34,8 @@ protected:
 private:
   // position & rotation with regard to object frame
   Eigen::Affine3d transform_; ///< Contact position transform w.r.t object frame (\f$objH_c\f$)
-  //Eigen::Vector3d position_;  ///< is set randomly or by discretization
-  //Eigen::Matrix3d rotation_;  ///< is set by model and position
 
-
-  Eigen::Vector3d contact_force_;
-  Eigen::Vector3d contact_torque_;
+  Eigen::Matrix<double, 6, 1> contact_force_torque_;
 
 };
 

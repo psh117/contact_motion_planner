@@ -1,5 +1,4 @@
-#ifndef BOX_CONTACT_MODEL_H
-#define BOX_CONTACT_MODEL_H
+#pragma once
 
 #include "contact_motion_planner/contact_model/contact_model.h"
 
@@ -21,17 +20,13 @@ public:
     line_samples_per_side_ = lines_per_side;
   }
 
-  virtual void createContactSamples(std::vector<ContactPtr> &contact_samples) override;
-  virtual bool operate(OperationDirection dir, double delta_x, double delta_orientation) override;
-  virtual ContactPtr getBottomContact() override;
-  virtual inline double getBottomPositionZ() override;
+  void createContactSamples(std::vector<ContactPtr> &contact_samples) override;
+  bool operate(OperationDirection dir, double delta_x, double delta_orientation) override;
+  ContactPtr getBottomContact() override;
+  inline double getBottomPositionZ() override;
   // constraints? how?
-protected:
-
 private:
   Eigen::Vector3d dimension_; ///< width, length, height
-
 };
 
 }
-#endif

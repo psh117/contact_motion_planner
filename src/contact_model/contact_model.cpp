@@ -102,5 +102,14 @@ void ContactModel::copyContactEnvironment()
     *it = new_contact;
   }
 }
+void ContactModel::copyContactRobot()
+{
+  std::vector<ContactPtr>::iterator it;
+  for (it = contact_robot_.begin(); it < contact_robot_.end(); it++)
+  {
+    ContactPtr new_contact = std::make_shared<Contact>(*(*it));
+    *it = new_contact;
+  }
+}
 
 }

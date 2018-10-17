@@ -81,6 +81,7 @@ public:
   bool goalNode() { return goal_node_; }
 
   void copyContactEnvironment();
+  void copyContactRobot();
 
 protected:
   std::string name_;

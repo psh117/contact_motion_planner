@@ -3,6 +3,19 @@
 namespace suhan_contact_planner
 {
 
+Eigen::Matrix3d cross_skew(Eigen::Vector3d input)
+{
+  Eigen::Matrix3d output;
+  output.setZero();
+  output(0,1) = -input(2);
+  output(1,0) = input(2);
+  output(0,2) = input(1);
+  output(2,0) = -input(1);
+  output(1,2) = -input(0);
+  output(2,1) = input(0);
+  return output;
+}
+
 void ContactOptimization::setModel(ContactModelPtr model)
 { model_ = model; }
 
@@ -21,6 +34,11 @@ bool ContactOptimization::solve()
   // TODO: gravity
 
   const double contact_number = model_->getContactNumber();
+  std::vector<ContactPtr> contacts;
+  contacts = model_->getContactRobot();
+  const auto& env_contact = model_->getContactEnvironment();
+  contacts.insert(contacts.end(), env_contact.begin(), env_contact.end());
+
   if (contact_number == 0) return false;
   A.setZero(6, contact_number * 6);
   b.setZero(6);
@@ -30,6 +48,7 @@ bool ContactOptimization::solve()
   for(size_t i=0; i<contact_number; i++)
   {
     A.block<3,3>(0, i*6).setIdentity();
+    A.block<3,3>(3, i*6) = cross_skew(contacts[i]->getContactTransform().translation());
     A.block<3,3>(3, i*6+3).setIdentity();
   }
   eq_constraint->setA(A);
@@ -37,10 +56,6 @@ bool ContactOptimization::solve()
 
   solver.addConstraint(eq_constraint);
 
-  std::vector<ContactPtr> contacts;
-  contacts = model_->getContactRobot();
-  const auto& env_contact = model_->getContactEnvironment();
-  contacts.insert(contacts.end(), env_contact.begin(), env_contact.end());
 
   // every contact
   auto ineq_constraint = std::make_shared<ConstraintInequality>();
@@ -146,7 +161,7 @@ bool ContactOptimization::solve()
     {
       // TODO: Force update!
       // TODO: Contact copy is needed!
-      //contacts[i]->set
+      contacts[i]->setContactForceTorque(result.segment<6>(i*6));
     }
     return true;
   }

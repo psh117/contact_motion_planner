@@ -29,6 +29,49 @@ void BoxContactModel::createContactSamples(std::vector <ContactPtr> &contact_sam
   const Eigen::Matrix3d rot_x_m90 = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(-M_PI_2, Eigen::Vector3d::UnitX());
   const Eigen::Matrix3d rot_y_m90 = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(-M_PI_2, Eigen::Vector3d::UnitY());
   const Eigen::Matrix3d rot_z_m90 = Eigen::Matrix3d::Identity() * Eigen::AngleAxisd(-M_PI_2, Eigen::Vector3d::UnitZ());
+
+  // Front and rear
+  for(size_t i=1; i < point_samples_per_edge_-1; i++)
+  {
+    for(size_t j=1; j < point_samples_per_edge_-1; j++)
+    {
+      Eigen::Affine3d transform = Eigen::Affine3d::Identity();
+      ContactPtr new_point_front = std::make_shared<Contact>();
+      ContactPtr new_point_rear = std::make_shared<Contact>();
+      transform.translation()(0) =  j * dimension_(0) / (point_samples_per_edge_ - 1) - dimension_(0) / 2;
+      transform.translation()(2) =  i * dimension_(2) / (point_samples_per_edge_ - 1) - dimension_(2) / 2;
+      transform.translation()(1) =  dimension_(1) / 2;
+      transform.linear() = rot_x_90;
+      new_point_front->setTransform(transform);
+      transform.translation()(1) =  - dimension_(1) / 2;
+      transform.linear() = rot_x_m90;
+      new_point_rear->setTransform(transform);
+      contact_samples.push_back(new_point_front);
+      contact_samples.push_back(new_point_rear);
+    }
+  }
+
+  // Left and right
+  for(size_t i=1; i < point_samples_per_edge_-1; i++)
+  {
+    for(size_t j=0; j < point_samples_per_edge_; j++)
+    {
+      Eigen::Affine3d transform = Eigen::Affine3d::Identity();
+      ContactPtr new_point_left = std::make_shared<Contact>();
+      ContactPtr new_point_right = std::make_shared<Contact>();
+      transform.translation()(1) =  i * dimension_(1) / (point_samples_per_edge_ - 1) - dimension_(1) / 2;
+      transform.translation()(2) =  j * dimension_(2) / (point_samples_per_edge_ - 1) - dimension_(2) / 2;
+      transform.translation()(0) =  dimension_(0) / 2;
+      transform.linear() = rot_y_m90;
+      new_point_left->setTransform(transform);
+      transform.translation()(0) =  - dimension_(0) / 2;
+      transform.linear() = rot_y_90;
+      new_point_right->setTransform(transform);
+      contact_samples.push_back(new_point_left);
+      contact_samples.push_back(new_point_right);
+    }
+  }
+
   // Contact points
   // Up and down with vertices
   for(size_t i=0; i < point_samples_per_edge_; i++)
@@ -51,47 +94,6 @@ void BoxContactModel::createContactSamples(std::vector <ContactPtr> &contact_sam
       contact_samples.push_back(new_point_down);
     }
   }
-  // Front and rear
-  for(size_t i=1; i < point_samples_per_edge_-1; i++)
-  {
-    for(size_t j=0; j < point_samples_per_edge_; j++)
-    {
-      Eigen::Affine3d transform = Eigen::Affine3d::Identity();
-      ContactPtr new_point_front = std::make_shared<Contact>();
-      ContactPtr new_point_rear = std::make_shared<Contact>();
-      transform.translation()(0) =  j * dimension_(0) / (point_samples_per_edge_ - 1) - dimension_(0) / 2;
-      transform.translation()(2) =  i * dimension_(2) / (point_samples_per_edge_ - 1) - dimension_(2) / 2;
-      transform.translation()(1) =  dimension_(1) / 2;
-      transform.linear() = rot_x_90;
-      new_point_front->setTransform(transform);
-      transform.translation()(1) =  - dimension_(1) / 2;
-      transform.linear() = rot_x_m90;
-      new_point_rear->setTransform(transform);
-      contact_samples.push_back(new_point_front);
-      contact_samples.push_back(new_point_rear);
-    }
-  }
-  // Left and right
-  for(size_t i=1; i < point_samples_per_edge_-1; i++)
-  {
-    for(size_t j=1; j < point_samples_per_edge_-1; j++)
-    {
-      Eigen::Affine3d transform = Eigen::Affine3d::Identity();
-      ContactPtr new_point_left = std::make_shared<Contact>();
-      ContactPtr new_point_right = std::make_shared<Contact>();
-      transform.translation()(1) =  i * dimension_(1) / (point_samples_per_edge_ - 1) - dimension_(1) / 2;
-      transform.translation()(2) =  j * dimension_(2) / (point_samples_per_edge_ - 1) - dimension_(2) / 2;
-      transform.translation()(0) =  dimension_(0) / 2;
-      transform.linear() = rot_y_m90;
-      new_point_left->setTransform(transform);
-      transform.translation()(0) =  - dimension_(0) / 2;
-      transform.linear() = rot_y_90;
-      new_point_right->setTransform(transform);
-      contact_samples.push_back(new_point_left);
-      contact_samples.push_back(new_point_right);
-    }
-  }
-
   // Contact Line
   for(size_t i=0; i<line_samples_per_side_; i++)
   {
@@ -167,7 +169,6 @@ void BoxContactModel::createContactSamples(std::vector <ContactPtr> &contact_sam
     for(int i=0; i<12; i++)
       contact_samples.push_back(new_line[i]);
   }
-
 }
 
 bool BoxContactModel::operate(OperationDirection dir, double delta_x, double delta_orientation)
@@ -282,7 +283,6 @@ bool BoxContactModel::operate(OperationDirection dir, double delta_x, double del
       transform_0_c2_p.linear() = transform_0_c2_p.linear() * Eigen::AngleAxisd(delta_orientation, Eigen::Vector3d::UnitY());
       transform_ = transform_0_c2_p * transform_c_c2.inverse() * transform_obj_c.inverse();
       contact_environment_[0]->setTransform(transform_obj_c * transform_c_c2);
-
     }
     if (contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_LINE &&
         line_contact_direction_ != dir) // Pivooooot

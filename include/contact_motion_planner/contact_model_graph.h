@@ -1,5 +1,4 @@
-#ifndef CONTACT_MODEL_GRAPH_H
-#define CONTACT_MODEL_GRAPH_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -55,8 +54,7 @@ class ContactModelGraph
   double angle_resolution_;
 
 public:
-
-  ContactModelGraph() : discrete_resolution_(0.1), angle_resolution_(0.62832) {}
+  ContactModelGraph() : discrete_resolution_(0.1), angle_resolution_(30 * M_PI/180.) {}
 
   void setStart(const std::shared_ptr<T> &start) { start_ = start; }
   void setGoal(const std::shared_ptr<T> &goal) { goal_ = goal; }
@@ -121,7 +119,6 @@ public:
       }
       if (goal_found) break;
     }
-
   }
 
   void makeCombinationGraph()
@@ -170,10 +167,11 @@ public:
   bool makeContactCombinationBranch(int model_index, int contact_index, int total_index, int depth)
   {
     if (depth > max_combined_depth_) return false;
-    ContactModelPtr node = std::make_shared<T>(*(dynamic_cast<T*>(contact_model_states_[model_index].get())));
+    ContactModelPtr node = std::make_shared<T>(
+          *(dynamic_cast<T*>
+            (contact_model_states_[model_index].get())));
 
     // Pruning when it has a bottom contact with environment
-
     if (node->getContactEnvironment().size() > 0)
     {
       if (node->getContactEnvironment()[0]->getContactState()
@@ -191,6 +189,7 @@ public:
     }
 
     node->setContactRobot(contact_nodes_[contact_index]);
+    node->copyContactRobot();
     node->setMass(start_->getMass());
     node->setFriction(start_->getFriction());
 
@@ -353,24 +352,44 @@ public:
     contact_model_states_.push_back(start_);
     state_adjacency_list_.push_back(std::vector<int>());
     contact_models_index_ = 1;
-    result_.clear();
 
-    makeObjectStateTree(0, 0);
+    // TODO: BFS!
+    std::queue<int> bfs_node_queue;
+    bfs_node_queue.push(0);
 
-    for(auto& node : result_)
+    while(!bfs_node_queue.empty())
     {
-      Eigen::Affine3d transform = node->getTransform();
-      auto& trans = node->getPosition();
-      ROS_INFO("TTTT %lf %lf %lf",trans[0], trans[1], trans[2]);
-      std::cout << transform.linear() << std::endl;
+      int current_index = bfs_node_queue.front();
+      bfs_node_queue.pop();
+
+      for(int dir=ContactModel::DIR_Z; dir<ContactModel::DIR_ROLL; dir++) // Test every direction
+      {
+        for (int i=-1; i<2; i+=2)
+        {
+          ContactModelPtr new_node = std::make_shared<T>(*(dynamic_cast<T*>(contact_model_states_[current_index].get()))); // Creation of new node
+          new_node->copyContactEnvironment();
+          if(new_node->operate(static_cast<ContactModel::OperationDirection>(dir),
+                                 discrete_resolution_ * i, angle_resolution_ * i))
+            // If operation is available + operate it
+            // i means sign
+          {
+            int index = processOperatedNode(new_node, current_index);
+            if(index > 0)
+            {
+              bfs_node_queue.push(index);
+            }
+          }
+        }
+      }
     }
+    // makeObjectStateTree(0, 0);
   }
 
 private:
-  bool processOperatedNode(ContactModelPtr new_node, int current_index, int depth)
+  int processOperatedNode(ContactModelPtr new_node, int current_index)
   {
     // print DEBUG
-    auto& trans = new_node->getPosition();
+    //auto& trans = new_node->getPosition();
     //ROS_INFO("%lf %lf %lf",trans[0], trans[1], trans[2]);
     /*
     if (new_node->isSamePose(*goal_, discrete_resolution_*0.7, angle_resolution_*0.7))
@@ -389,7 +408,8 @@ private:
 
     }
       */
-
+    if(contact_models_index_ > 20000) return -1;
+    int index = -1;
     bool detectedSamePose = false;
     for(auto it=contact_model_states_.begin(); it!=contact_model_states_.end(); it++) //
     {
@@ -397,12 +417,12 @@ private:
       {
         //ROS_INFO("same pose detected");
         detectedSamePose = true;
-        int index = std::distance(contact_model_states_.begin(), it);
-        for(int connected_index : state_adjacency_list_[index])
+        int same_index = std::distance(contact_model_states_.begin(), it);
+        for(int connected_index : state_adjacency_list_[same_index])
         {
           if(std::find(state_adjacency_list_[connected_index].begin(),    // If not connected yet,
                        state_adjacency_list_[connected_index].end(),
-                       index) == state_adjacency_list_[connected_index].end())
+                       same_index) == state_adjacency_list_[connected_index].end())
           {
             state_adjacency_list_[connected_index].push_back(current_index);
             state_adjacency_list_[current_index].push_back(connected_index);
@@ -422,22 +442,22 @@ private:
           new_node->setGoalNode();
           new_node->setTransform(goal_->getTransform());
         }
-        int index = contact_models_index_;
+        index = contact_models_index_;
         contact_model_states_.push_back(new_node);
         state_adjacency_list_.push_back(std::vector<int>());
         contact_models_index_++;
         state_adjacency_list_[index].push_back(current_index);
         state_adjacency_list_[current_index].push_back(index);
 
-        if(makeObjectStateTree(index, depth+1))
-        {
-          // result_.push_back(new_node);
-          return true;
-        }; // Do this at next node
+//        if(makeObjectStateTree(index, depth+1))
+//        {
+//          // result_.push_back(new_node);
+//          return true;
+//        }; // Do this at next node
       }
     }
-    return false;
-  }
+    return index;
+  }/*
   bool makeObjectStateTree(int current_index, int depth)
   {
     if (depth > max_depth_)
@@ -462,10 +482,7 @@ private:
       }
     }
     return false;
-  }
-
-
+  }*/
 };
 
 }
-#endif

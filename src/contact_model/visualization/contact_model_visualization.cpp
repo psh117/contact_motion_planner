@@ -181,7 +181,7 @@ void ContactModelVisualization::getArrowMarker(visualization_msgs::Marker& marke
   marker.points.push_back(b);
   marker.points.push_back(a);
 
-  marker.scale.x = 0.02;
+  marker.scale.x = 0.007;
   marker.scale.y = 0.025;
   marker.scale.z = 0;
       /*

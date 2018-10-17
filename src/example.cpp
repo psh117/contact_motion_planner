@@ -39,16 +39,14 @@ int main(int argc, char** argv)
     model->setTransform(start_transform);
     model->setContactEnvironment(model->getBottomContact());
     //model->operate(ContactModel::OperationDirection::DIR_YAW, 0.10, -30 * 3.141592/180);
-    model->operate(ContactModel::OperationDirection::DIR_ROLL, 0.10, -30 * 3.141592/180);
-    model->operate(ContactModel::OperationDirection::DIR_PITCH, 0.10, -30 * 3.141592/180);
+    model->operate(ContactModel::OperationDirection::DIR_ROLL, 0.10, 30 * M_PI/180.);
     cout << "after operation" << endl <<
             model->getTransform().matrix() << endl;
 
-    model->operate(ContactModel::OperationDirection::DIR_PITCH, 0.10, -30 * 3.141592/180);
-    model->operate(ContactModel::OperationDirection::DIR_ROLL, 0.10, -30 * 3.141592/180);
+    //model->operate(ContactModel::OperationDirection::DIR_PITCH, 0.10, -30 * 3.141592/180);
+    //model->operate(ContactModel::OperationDirection::DIR_ROLL, 0.10, -30 * 3.141592/180);
     cout << "after operation" << endl <<
             model->getTransform().matrix() << endl;
-
     /*
     static tf2_ros::StaticTransformBroadcaster static_broadcaster;
     geometry_msgs::TransformStamped before_operation_transform = tf2::eigenToTransform(start_transform);
@@ -63,7 +61,6 @@ int main(int argc, char** argv)
     static_broadcaster.sendTransform(before_operation_transform);
     static_broadcaster.sendTransform(after_operation_transform);
     */
-
   }
   // Set our initial shape type to be a cube
   /*
@@ -110,9 +107,14 @@ int main(int argc, char** argv)
     std::cout << sample->getContactTransform().translation().transpose() << std::endl;
   }
   start_transform.linear() = Eigen::Matrix3d::Identity();
-  goal_transform.linear() = Eigen::Matrix3d::Identity(); // * Eigen::AngleAxisd(45 * 3.141592/180., Eigen::Vector3d::UnitZ());
+  goal_transform.linear() <<  1,          0,          0,
+                              0,   0.866025,       -0.5,
+                              0,        0.5,   0.866025;
+  goal_transform.linear().setIdentity();
+// * Eigen::AngleAxisd(45 * 3.141592/180., Eigen::Vector3d::UnitZ());
   start_transform.translation() << 0.0, 0.0, 0.1;
-  goal_transform.translation() << .0, 0.0, .4;
+  //goal_transform.translation() << .0, -0.0767949, 0.186603 + .2;
+  goal_transform.translation() << .0, .0, .4;
 
   env_table1_transform.translation()    << .0, .0, -0.0251;
   env_obstacle1_transform.translation() << .25, .0, .25;
@@ -121,6 +123,7 @@ int main(int argc, char** argv)
 
   start->setTransform(start_transform);
   goal->setTransform(goal_transform);
+
 
   ContactModelGraph<BoxContactModel> g;
   PlanningScenePtr scene = make_shared<PlanningScene>();
