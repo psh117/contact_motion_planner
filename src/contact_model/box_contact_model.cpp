@@ -173,7 +173,6 @@ void BoxContactModel::createContactSamples(std::vector <ContactPtr> &contact_sam
 
 bool BoxContactModel::operate(OperationDirection dir, double delta_x, double delta_orientation)
 {
-  Eigen::Affine3d transform_operated = Eigen::Affine3d::Identity();
   Eigen::Affine3d transform_obj_c = Eigen::Affine3d::Identity();
   Eigen::Affine3d transform_c_c2 = Eigen::Affine3d::Identity();
   Eigen::Affine3d transform_0_c2 = Eigen::Affine3d::Identity();
@@ -195,29 +194,21 @@ bool BoxContactModel::operate(OperationDirection dir, double delta_x, double del
   {
     if(dir == DIR_X || dir == DIR_Y) return false;
   }
-
-  // TODO: When a contact model object is operated, contact state should be changed
-  //       You may change the class structure
-
   switch (dir)
   {
   case DIR_X:
-    transform_operated.translation()(0) = delta_x;
-    transform_ = transform_ * transform_operated;
+    transform_.translation()(0) += delta_x;
     break;
   case DIR_Y:
-    transform_operated.translation()(1) = delta_x;
-    transform_ = transform_ * transform_operated;
+    transform_.translation()(1) += delta_x;
     break;
   case DIR_Z: // Should I consider putting it down again?
-    transform_operated.translation()(2) = delta_x;
-    transform_ = transform_ * transform_operated;
+    transform_.translation()(2) += delta_x;
     contact_environment_.clear();
     break;
 
     // TODO: The rotation should be rotated w.r.t contact point not the center of the object.
   case DIR_ROLL:  // along X axis
-
     if (contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_POINT)
     {
       transform_obj_c = contact_environment_[0]->getContactTransform();
@@ -244,17 +235,17 @@ bool BoxContactModel::operate(OperationDirection dir, double delta_x, double del
       contact_environment_[0]->setTransform(transform_obj_c * transform_c_c2);
     }
     if (contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_LINE &&
-        line_contact_direction_ != dir) // Pivooooot
+        contact_environment_[0]->getLineContactDirection() != Contact::ContactDirection::DIR_X) // Pivooooot
     {
       //std::cout << "pivot" << std::endl;
       contact_environment_[0]->setContactState(Contact::ContactState::CONTACT_POINT);
     }
     else if (contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_FACE ||
              (contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_LINE &&
-              line_contact_direction_ == dir))  // Rotate
+              contact_environment_[0]->getLineContactDirection() == Contact::ContactDirection::DIR_X))  // Rotate
     {
       contact_environment_[0]->setContactState(Contact::ContactState::CONTACT_LINE);
-      line_contact_direction_ = DIR_ROLL;
+      contact_environment_[0]->setLineContactDirection(Contact::ContactDirection::DIR_X);
     }
 
     break;
@@ -285,17 +276,18 @@ bool BoxContactModel::operate(OperationDirection dir, double delta_x, double del
       contact_environment_[0]->setTransform(transform_obj_c * transform_c_c2);
     }
     if (contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_LINE &&
-        line_contact_direction_ != dir) // Pivooooot
+        contact_environment_[0]->getLineContactDirection() != Contact::ContactDirection::DIR_Y) // Pivooooot
     {
       //std::cout << "pivot" << std::endl;
       contact_environment_[0]->setContactState(Contact::ContactState::CONTACT_POINT);
     }
     else if (contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_FACE ||
              (contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_LINE &&
-              line_contact_direction_ == dir))  // Rotate
+              contact_environment_[0]->getLineContactDirection() == Contact::ContactDirection::DIR_Y))  // Rotate
     {
       contact_environment_[0]->setContactState(Contact::ContactState::CONTACT_LINE);
-      line_contact_direction_ = DIR_PITCH;
+      contact_environment_[0]->setLineContactDirection(Contact::ContactDirection::DIR_Y);
+      // line_contact_direction_ = DIR_PITCH;
     }
     break;
   case DIR_YAW:
@@ -320,6 +312,8 @@ ContactPtr BoxContactModel::getBottomContact()
   transform.linear() = Eigen::Matrix3d::Identity();
 
   contact->setTransform(transform);
+  contact->setContactLength(dimension_(0), dimension_(1));
+
   return contact;
 }
 

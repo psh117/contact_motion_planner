@@ -12,7 +12,9 @@ void Contact::printContactState()
 {
   std::cout << "[Contact State] \n" <<
                "Transform: \n" <<
-               transform_.matrix() << std::endl;
+               transform_.matrix() << std::endl <<
+               "Force: \n" <<
+               contact_force_torque_.transpose() << std::endl;
 
 }
 

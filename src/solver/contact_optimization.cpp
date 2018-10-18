@@ -71,7 +71,7 @@ bool ContactOptimization::solve()
   {
     Eigen::Matrix<double, 6, 6> R_hat;
     Eigen::Matrix<double, 3, 3> R;
-    R = contact->getContactTransform().linear();
+    R = contact->getContactTransform().linear().transpose();
     R_hat.setZero();
     R_hat.block<3,3>(0,0) = R;
     R_hat.block<3,3>(3,3) = R;
@@ -94,6 +94,11 @@ bool ContactOptimization::solve()
     C_cop(3, 3) = 1;
     if (contact->getContactState() == Contact::ContactState::CONTACT_FACE)
     {
+      const auto& contact_length = contact->getContactLength();
+      C_cop(0,2) =      contact_length[0] / 2;
+      C_cop(1,2) = - (- contact_length[0] / 2);
+      C_cop(2,2) =      contact_length[1] / 2;
+      C_cop(3,2) = - (- contact_length[1] / 2);
       // l_x l_y
     }
 
@@ -150,14 +155,14 @@ bool ContactOptimization::solve()
   }
   ineq_constraint->setA(C_all);
   ineq_constraint->setOnlyLowerBound(d_all);
+  // ineq_constraint->printCondition();
   solver.addConstraint(ineq_constraint);
   solver.setContactNumber(model_->getContactNumber());
   Eigen::VectorXd result;
   if(solver.solve(result))
   {
-
-    auto &contacs = model_->getContactRobot();
-    for(int i=0; i<contacs.size();i++)
+    //auto &contacs = model_->getContactRobot();
+    for(int i=0; i<contacts.size();i++)
     {
       // TODO: Force update!
       // TODO: Contact copy is needed!

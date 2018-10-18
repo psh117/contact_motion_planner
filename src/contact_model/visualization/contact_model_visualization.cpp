@@ -86,32 +86,47 @@ void ContactModelVisualization::frameAssignment()
       transform_msg_c.child_frame_id = box_contact_marker_name;
       static_broadcaster_.sendTransform(transform_msg_c);
       contact_number++;
+
     }
+
     number++;
   }
 }
 void ContactModelVisualization::makeMarkerArray()
 {
-  double angle = 0;
-  int number = 0;
+  char h = 0;
   marker_array_.markers.clear();
-  for (auto & node : contact_list_)
+  while (ros::ok())
   {
-    visualization_msgs::Marker marker;
-    std::string box_marker_name = "box_model_" + std::to_string(number);
-    getBoxMarker(marker, box_marker_name, hsv2rgb(Eigen::Vector3d(angle,1.,1.)));
-    marker_array_.markers.push_back(marker);
-    int contact_number = 0;
-    for (auto & contact : node->getContactRobot())
+    double angle = 0;
+    int number = 0;
+    for (auto & node : contact_list_)
     {
-      visualization_msgs::Marker marker_c;
-      std::string box_contact_marker_name = box_marker_name + "_contact_" + std::to_string(contact_number);
-      getArrowMarker(marker_c, box_contact_marker_name, hsv2rgb(Eigen::Vector3d(angle,1.,1.)));
-      marker_array_.markers.push_back(marker_c);
-      contact_number++;
+      visualization_msgs::Marker marker;
+      std::string box_marker_name = "box_model_" + std::to_string(number);
+      getBoxMarker(marker, box_marker_name, hsv2rgb(Eigen::Vector3d(angle,1.,1.)));
+      marker_array_.markers.push_back(marker);
+      int contact_number = 0;
+      for (auto & contact : node->getContactRobot())
+      {
+        Eigen::Vector3d force = contact->getContactForceTorque().head<3>();
+        force = contact->getContactTransform().linear().transpose() * force;
+        visualization_msgs::Marker marker_c;
+        std::string box_contact_marker_name = box_marker_name + "_contact_" + std::to_string(contact_number);
+        getArrowMarker(marker_c, box_contact_marker_name, hsv2rgb(Eigen::Vector3d(angle,1.,1.)), force);
+        marker_array_.markers.push_back(marker_c);
+        contact_number++;
+      }
+      angle += 360. / contact_list_.size();
+      number++;
+
+      marker_pub_.publish(marker_array_);
+      ROS_INFO("press any key to show");
+      std::cin >> h;
+      if (h=='q') break;
+      marker_array_.markers.clear();
     }
-    angle += 360. / contact_list_.size();
-    number++;
+    if( h== 'q' ) break;
   }
 }
 
@@ -157,7 +172,7 @@ void ContactModelVisualization::getBoxMarker(visualization_msgs::Marker& marker,
 }
 
 void ContactModelVisualization::getArrowMarker(visualization_msgs::Marker& marker,
-                  const std::string &frame_name, Eigen::Vector3d color)
+                  const std::string &frame_name, Eigen::Vector3d color, const Eigen::Matrix<double, 3, 1> &force)
 {
   marker.header.frame_id = frame_name;
   marker.header.stamp = ros::Time::now();
@@ -176,7 +191,9 @@ void ContactModelVisualization::getArrowMarker(visualization_msgs::Marker& marke
   // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
   geometry_msgs::Point a, b;
   a.x = 0; a.y =0; a.z = 0;
-  b.x = 0; b.y =0; b.z = -.1;
+  b.x = -force(0) * 0.01;
+  b.y = -force(1) * 0.01;
+  b.z = -force(2) * 0.01;
   marker.points.push_back(b);
   marker.points.push_back(a);
 

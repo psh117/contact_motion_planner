@@ -32,7 +32,6 @@ public:
     {}
     frameAssignment();
     makeMarkerArray();
-    marker_pub_.publish(marker_array_);
   }
 private:
   void frameAssignment();
@@ -42,7 +41,7 @@ private:
                     const std::string &frame_name, Eigen::Vector3d color);
 
   void getArrowMarker(visualization_msgs::Marker& marker,
-                      const std::string &frame_name, Eigen::Vector3d color);
+                      const std::string &frame_name, Eigen::Vector3d color, const Eigen::Matrix<double, 3, 1> &force);
 
   ros::Publisher marker_pub_;
   visualization_msgs::MarkerArray marker_array_;

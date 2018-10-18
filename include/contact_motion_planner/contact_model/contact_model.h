@@ -96,16 +96,13 @@ protected:
   std::shared_ptr< fcl::ShapeBase > fcl_model_;
   fcl::Transform3f fcl_transform_;
 
-  OperationDirection line_contact_direction_;
-
-
+  // OperationDirection line_contact_direction_;
 
   virtual void updateFCLModel();
 
   bool goal_node_ {false};
   double mass_ {1.0};
   double friction_ {1.0};
-
   //virtual void sample() = 0;
 };
 

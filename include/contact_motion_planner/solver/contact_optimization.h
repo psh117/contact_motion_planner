@@ -14,8 +14,6 @@ namespace suhan_contact_planner
 class ContactOptimization
 {
 public:
-  //ContactOptimization();
-
   void setModel(ContactModelPtr model);
   void setRobot(RobotDynamicsModelPtr robot);
   bool solve();

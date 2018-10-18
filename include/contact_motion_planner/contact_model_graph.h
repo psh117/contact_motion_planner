@@ -100,10 +100,15 @@ public:
             {
               result_.push_back(combinated_nodes_[p]);
               std::cout << "* Node -----------------------" << p << std::endl;
-              std::cout << "Transform: \n" <<
+              std::cout << "## MAIN Transform: \n" <<
                            combinated_nodes_[p]->getTransform().matrix() << std::endl;
 
-              std::cout << "Contacts: \n";
+              std::cout << "Contacts (Env): \n";
+              for (auto g : combinated_nodes_[p]->getContactEnvironment())
+              {
+                g->printContactState();
+              }
+              std::cout << "Contacts (Robot): \n";
               for (auto g : combinated_nodes_[p]->getContactRobot())
               {
                 g->printContactState();
@@ -190,6 +195,7 @@ public:
 
     node->setContactRobot(contact_nodes_[contact_index]);
     node->copyContactRobot();
+    node->copyContactEnvironment();
     node->setMass(start_->getMass());
     node->setFriction(start_->getFriction());
 
@@ -347,7 +353,6 @@ public:
   }
   void makeObjectPoseGraph()
   {
-    ROS_INFO("makeObjectPoseGraph");
     contact_model_states_.clear();
     contact_model_states_.push_back(start_);
     state_adjacency_list_.push_back(std::vector<int>());
@@ -362,7 +367,7 @@ public:
       int current_index = bfs_node_queue.front();
       bfs_node_queue.pop();
 
-      for(int dir=ContactModel::DIR_Z; dir<ContactModel::DIR_ROLL; dir++) // Test every direction
+      for(int dir=ContactModel::DIR_Z; dir<=ContactModel::DIR_ROLL; dir++) // Test every direction
       {
         for (int i=-1; i<2; i+=2)
         {

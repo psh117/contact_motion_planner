@@ -37,7 +37,6 @@ protected:
   Eigen::MatrixXd A_;
   Eigen::VectorXd lower_bound_;
   Eigen::VectorXd upper_bound_;
-
 };
 typedef std::shared_ptr<ConstraintBase> ConstraintBasePtr;
 

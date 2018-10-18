@@ -85,7 +85,7 @@ int main(int argc, char** argv)
   dim << 0.1, 0.4, 0.2;
   shared_ptr<BoxContactModel> start = make_shared<BoxContactModel>("box", dim);
   start->setMass(1);
-  start->setFriction(0.1);
+  start->setFriction(0.2);
   start->setSampleResolution(3,0);
   start->setContactEnvironment(start->getBottomContact());
   shared_ptr<BoxContactModel> goal = make_shared<BoxContactModel>(*start);
@@ -110,11 +110,11 @@ int main(int argc, char** argv)
   goal_transform.linear() <<  1,          0,          0,
                               0,   0.866025,       -0.5,
                               0,        0.5,   0.866025;
-  goal_transform.linear().setIdentity();
-// * Eigen::AngleAxisd(45 * 3.141592/180., Eigen::Vector3d::UnitZ());
+  //goal_transform.linear().setIdentity();
+  //goal_transform.linear().setIdentity() * Eigen::AngleAxisd(45 * 3.141592/180., Eigen::Vector3d::UnitZ());
   start_transform.translation() << 0.0, 0.0, 0.1;
-  //goal_transform.translation() << .0, -0.0767949, 0.186603 + .2;
-  goal_transform.translation() << .0, .0, .4;
+  goal_transform.translation() << .0, -0.0767949, 0.186603 + .2;
+  //goal_transform.translation() << .0, .0, .4;
 
   env_table1_transform.translation()    << .0, .0, -0.0251;
   env_obstacle1_transform.translation() << .25, .0, .25;

@@ -81,9 +81,11 @@ bool ContactModel::isSamePose(const ContactModel& model, double threshold_x, dou
   Eigen::Vector3d orientation_diff;
   Eigen::Vector3d translation_diff;
 
-  orientation_diff =  getPhi(model.getTransform().linear(), transform_.linear());
-  translation_diff = (model.getTransform().translation() - transform_.translation());
+  Eigen::Matrix3d rotation_diff = model.getTransform().linear() - transform_.linear();
+  if (rotation_diff.squaredNorm() > 0.2) return false;
 
+  translation_diff = model.getTransform().translation() - transform_.translation();
+  orientation_diff =  getPhi(model.getTransform().linear(), transform_.linear());
   return (orientation_diff.norm() < threshold_orientation && translation_diff.norm() < threshold_x);
   //return (translation_diff.norm() < threshold);
 }

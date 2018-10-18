@@ -7,12 +7,11 @@ namespace suhan_contact_planner
 
 class ConstraintEquality : public ConstraintBase
 {
-
 public:
   ConstraintEquality(const std::string &name = "");
   void setEqualityCondition(const Eigen::VectorXd & b);
 
-  virtual void printCondition() override;
+  void printCondition() override;
 };
 
 } // namespace suhan_contact_planner
