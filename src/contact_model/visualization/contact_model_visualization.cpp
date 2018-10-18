@@ -86,9 +86,7 @@ void ContactModelVisualization::frameAssignment()
       transform_msg_c.child_frame_id = box_contact_marker_name;
       static_broadcaster_.sendTransform(transform_msg_c);
       contact_number++;
-
     }
-
     number++;
   }
 }

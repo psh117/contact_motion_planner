@@ -39,7 +39,7 @@ public:
    * @param delta
    * @return Whether it is possible operation.
    */
-  virtual bool operate(OperationDirection dir, double delta_x, double delta_orientation);
+  virtual bool operate(OperationDirection dir, double delta_x, double delta_orientation) = 0;
 
   /**
    * @brief isSamePose

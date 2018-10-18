@@ -14,7 +14,7 @@ class Contact
 public:
   enum class ContactRelation {CONTACT_OBJ_ENV, CONTACT_OBJ_ROBOT};
   enum class ContactState {CONTACT_FACE, CONTACT_LINE, CONTACT_POINT};
-  enum class ContactDirection : int {DIR_X = 0, DIR_Y = 1};
+  enum class ContactDirection : int {DIR_Y = 0, DIR_X = 1};
 
   Contact(ContactState contact_state = ContactState::CONTACT_POINT, 
           ContactRelation contact_relation = ContactRelation::CONTACT_OBJ_ROBOT) ;
@@ -56,6 +56,5 @@ private:
 };
 
 typedef std::shared_ptr<Contact> ContactPtr;
-
 
 }

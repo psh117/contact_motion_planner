@@ -100,6 +100,18 @@ bool ContactOptimization::solve()
       C_cop(2,2) =      contact_length[1] / 2;
       C_cop(3,2) = - (- contact_length[1] / 2);
       // l_x l_y
+    } else if (contact->getContactState() == Contact::ContactState::CONTACT_LINE)
+    {
+      if (contact->getLineContactDirection() == Contact::ContactDirection::DIR_X)
+      {
+        C_cop(2,2) =      contact->getLineContactLength() / 2;
+        C_cop(3,2) = - (- contact->getLineContactLength() / 2);
+      }
+      else
+      {
+        C_cop(0,2) =      contact->getLineContactLength() / 2;
+        C_cop(1,2) = - (- contact->getLineContactLength() / 2);
+      }
     }
 
     // friction

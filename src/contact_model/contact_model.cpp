@@ -22,60 +22,6 @@ static Eigen::Vector3d getPhi(Eigen::Matrix3d current_rotation,
   return phi;
 }
 
-
-bool ContactModel::operate(OperationDirection dir, double delta_x, double delta_orientation)
-{
-  if(contact_environment_.empty())  // No contact
-  {
-    if(dir == DIR_ROLL || dir == DIR_PITCH) return false;
-  }
-  // We assume that there's only a contact with environment
-  else if(contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_FACE)
-  {
-    // Face contact can do anything
-  }
-  else if(contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_LINE)
-  {
-    if(dir == DIR_X || dir == DIR_Y || dir == DIR_YAW) return false;
-  }
-  else if(contact_environment_[0]->getContactState() == Contact::ContactState::CONTACT_POINT)
-  {
-    if(dir == DIR_X || dir == DIR_Y) return false;
-  }
-
-  // TODO: When a contact model object is operated, contact state should be changed
-  //       You may change the class structure
-  switch (dir)
-  {
-  case DIR_X:
-    transform_.translation()(0) += delta_x;
-    break;
-  case DIR_Y:
-    transform_.translation()(1) += delta_x;
-    break;
-  case DIR_Z:
-    transform_.translation()(2) += delta_x;
-    break;
-
-  // TODO: The rotation should be rotated w.r.t contact point not the center of the object.
-  case DIR_ROLL:
-    transform_.linear() = transform_.linear() * Eigen::AngleAxisd(delta_orientation, Eigen::Vector3d::UnitX());
-    break;
-  case DIR_PITCH:
-    transform_.linear() = transform_.linear() * Eigen::AngleAxisd(delta_orientation, Eigen::Vector3d::UnitY());
-    break;
-  case DIR_YAW:
-    transform_.linear() = transform_.linear() * Eigen::AngleAxisd(delta_orientation, Eigen::Vector3d::UnitZ());
-    break;
-  default:
-    // Error
-    return false;
-  }
-
-  updateFCLModel();
-  return true;
-}
-
 bool ContactModel::isSamePose(const ContactModel& model, double threshold_x, double threshold_orientation) const
 {
   Eigen::Vector3d orientation_diff;

@@ -15,7 +15,6 @@ void Contact::printContactState()
                transform_.matrix() << std::endl <<
                "Force: \n" <<
                contact_force_torque_.transpose() << std::endl;
-
 }
 
 }
