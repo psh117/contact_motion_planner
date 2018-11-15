@@ -100,19 +100,21 @@ public:
             {
               result_.push_back(combinated_nodes_[p]);
               std::cout << "* Node -----------------------" << p << std::endl;
-              std::cout << "## MAIN Transform: \n" <<
-                           combinated_nodes_[p]->getTransform().matrix() << std::endl;
+              combinated_nodes_[p]->printAbsoulteContactPositions();
 
-              std::cout << "Contacts (Env): \n";
-              for (auto g : combinated_nodes_[p]->getContactEnvironment())
-              {
-                g->printContactState();
-              }
-              std::cout << "Contacts (Robot): \n";
-              for (auto g : combinated_nodes_[p]->getContactRobot())
-              {
-                g->printContactState();
-              }
+//              std::cout << "## MAIN Transform: \n" <<
+//                           combinated_nodes_[p]->getTransform().matrix() << std::endl;
+
+//              std::cout << "Contacts (Env): \n";
+//              for (auto g : combinated_nodes_[p]->getContactEnvironment())
+//              {
+//                g->printContactState();
+//              }
+//              std::cout << "Contacts (Robot): \n";
+//              for (auto g : combinated_nodes_[p]->getContactRobot())
+//              {
+//                g->printContactState();
+//              }
               //std::cout << combinated_nodes_[p]-><< std::endl;
             }
 

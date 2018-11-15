@@ -3,7 +3,11 @@ project(contact_motion_planner)
 
 add_compile_options(-std=c++11)
 
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+message(STATUS "CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
+
 find_package(Eigen3 REQUIRED)
+find_package(qpOASES REQUIRED)
 
 # Eigen 3.2 (Wily) only provides EIGEN3_INCLUDE_DIR, not EIGEN3_INCLUDE_DIRS
 if(NOT EIGEN3_INCLUDE_DIRS)
@@ -15,7 +19,6 @@ find_package(fcl REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   tf2
-  tf2_ros
   tf2_geometry_msgs
   moveit_core
   moveit_ros_planning
@@ -24,9 +27,9 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES planning_moveit_plugin_test
-  CATKIN_DEPENDS roscpp
-#  DEPENDS system_lib
+  LIBRARIES contact_motion_planner
+  CATKIN_DEPENDS roscpp tf2 tf2_geometry_msgs
+  #  DEPENDS system_lib
 )
 
 #set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -57,6 +60,10 @@ add_library(contact_motion_planner
   src/solver/constraint/constraint_equality.cpp
   src/solver/constraint/constraint_inequality.cpp
 )
+
+add_dependencies(contact_motion_planner ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+
 #set_property(TARGET contact_motion_planner PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries (contact_motion_planner
   qpOASES
@@ -84,18 +91,18 @@ target_link_libraries (example
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE
+)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES

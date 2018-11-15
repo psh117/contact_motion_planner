@@ -29,7 +29,7 @@ int main(int argc, char** argv)
   // ContactModel module
   {
     Eigen::Vector3d dim;
-    dim << 0.1, 0.4, 0.2;
+    dim << 0.3, 0.4, 0.2;
     shared_ptr<BoxContactModel> model = make_shared<BoxContactModel>("box", dim);
     Eigen::Affine3d start_transform;
     start_transform.linear() = Eigen::Matrix3d::Identity();
@@ -47,39 +47,8 @@ int main(int argc, char** argv)
     //model->operate(ContactModel::OperationDirection::DIR_ROLL, 0.10, -30 * 3.141592/180);
     cout << "after operation" << endl <<
             model->getTransform().matrix() << endl;
-    /*
-    static tf2_ros::StaticTransformBroadcaster static_broadcaster;
-    geometry_msgs::TransformStamped before_operation_transform = tf2::eigenToTransform(start_transform);
-    geometry_msgs::TransformStamped after_operation_transform = tf2::eigenToTransform(model->getTransform());
-
-    before_operation_transform.header.stamp = ros::Time::now();
-    before_operation_transform.header.frame_id = "world";
-    before_operation_transform.child_frame_id = "before_operation";
-    after_operation_transform.header.stamp = ros::Time::now();
-    after_operation_transform.header.frame_id = "world";
-    after_operation_transform.child_frame_id = "after_operation";
-    static_broadcaster.sendTransform(before_operation_transform);
-    static_broadcaster.sendTransform(after_operation_transform);
-    */
   }
   // Set our initial shape type to be a cube
-  /*
-  visualization_msgs::MarkerArray marker_array;
-  visualization_msgs::Marker marker1;
-  visualization_msgs::Marker marker2;
-  getBoxMarker(marker1, "/before_operation",0,1,0);
-  getBoxMarker(marker2, "/after_operation",1,0,0);
-  // Set the frame ID and timestamp.  See the TF tutorials for information on these.
-
-  marker_array.markers.push_back(marker1);
-  marker_array.markers.push_back(marker2);
-  ros::Publisher marker_pub = nh.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 1);
-  while (marker_pub.getNumSubscribers() < 1)
-  {}
-
-  marker_pub.publish(marker_array);
-*/
-
   // Graph generation module
   Eigen::Vector3d dim;
   dim << 0.1, 0.4, 0.2;
@@ -112,11 +81,11 @@ int main(int argc, char** argv)
                               0,        0.5,   0.866025;
   //goal_transform.linear().setIdentity();
   //goal_transform.linear().setIdentity() * Eigen::AngleAxisd(45 * 3.141592/180., Eigen::Vector3d::UnitZ());
-  start_transform.translation() << 0.0, 0.0, 0.1;
-  goal_transform.translation() << .0, -0.0767949, 0.186603 + .2;
+  start_transform.translation() << 0.6, 0.0, 0.85;
+  goal_transform.translation() << 0.6, -0.0767949, 0.186603 + .2 + .75;
   //goal_transform.translation() << .0, .0, .4;
 
-  env_table1_transform.translation()    << .0, .0, -0.0251;
+  env_table1_transform.translation()    << 0.6, .0, 0.75 - 0.05/2. -0.0001 ;
   env_obstacle1_transform.translation() << .25, .0, .25;
   env_table1_transform.linear() = Eigen::Matrix3d::Identity();
   env_obstacle1_transform.linear() = Eigen::Matrix3d::Identity();

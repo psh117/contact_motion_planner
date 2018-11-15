@@ -60,4 +60,37 @@ void ContactModel::copyContactRobot()
   }
 }
 
+void ContactModel::printContacts()
+{
+  std::cout << "## MAIN Transform: \n" <<
+               transform_.matrix() << std:: endl;
+
+  std::cout << "Contacts (Env): \n";
+  for (auto g : contact_environment_)
+  {
+    g->printContactState();
+  }
+  std::cout << "Contacts (Robot): \n";
+  for (auto g : contact_robot_)
+  {
+    g->printContactState();
+  }
+}
+
+void ContactModel::printAbsoulteContactPositions()
+{
+  std::cout << "## MAIN Transform: \n" <<
+               transform_.matrix() << std:: endl;
+
+  std::cout << "Contacts (Robot, ABS): \n";
+  for (auto g : contact_robot_)
+  {
+    std::cout << "[Contact State] \n" <<
+                 "Transform: \n" <<
+                 (transform_ * g->getContactTransform()).matrix() << std::endl <<
+                 "Force: \n" <<
+                 g->getContactForceTorque().transpose() << std::endl;
+  }
+}
+
 }

@@ -12,7 +12,7 @@ public:
   {
     //ROS_INFO("%lf %lf %lf", position[0], position[1], position[2]);
     //std::cout << position.transpose() << std::endl;
-    return (position.norm() < 0.5);
+    return (position.norm() < 1.5);
   }
   bool isPossibleContact(Eigen::Affine3d transform) override { return true; }
 

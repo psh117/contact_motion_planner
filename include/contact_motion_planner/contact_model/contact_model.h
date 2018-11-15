@@ -83,6 +83,9 @@ public:
   void copyContactEnvironment();
   void copyContactRobot();
 
+  void printContacts();
+  void printAbsoulteContactPositions();
+
 protected:
   std::string name_;
   Eigen::Affine3d transform_;
